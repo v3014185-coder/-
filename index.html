@@ -141,6 +141,30 @@
             margin-bottom: 20px;
         }
 
+        /* --- Блок для вывода текста (вместо Alert) --- */
+        .info-output {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border-color);
+            color: var(--primary-red);
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none; /* Скрыт по умолчанию */
+            animation: fadeIn 0.5s;
+        }
+
+        .info-output.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* --- Экран вакансий --- */
         .jobs-title {
             color: var(--primary-red);
@@ -197,7 +221,6 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(2px);
         }
 
         .modal-content {
@@ -251,17 +274,12 @@
             font-size: 14px;
             cursor: pointer;
             text-transform: uppercase;
-            margin-right: 10px;
         }
 
         .modal-btn.submit {
             background: var(--primary-red);
             color: black;
             border-color: var(--primary-red);
-        }
-
-        .modal-btn:hover {
-            filter: brightness(1.2);
         }
 
         /* --- Эффект печатной машинки --- */
@@ -293,6 +311,9 @@
             <button id="btn-rules" class="btn">УСТАВ</button>
         </div>
         <button id="btn-jobs" class="btn">ВАКАНСИИ</button>
+        
+        <!-- Блок для вывода текста вместо Alert -->
+        <div id="infoOutput" class="info-output"></div>
     </div>
 
     <!-- ЭКРАН ВАКАНСИЙ -->
@@ -352,6 +373,7 @@
     const screenLoad = document.getElementById('screen-load');
     const screenMain = document.getElementById('screen-main');
     const screenJobs = document.getElementById('screen-jobs');
+    const infoOutput = document.getElementById('infoOutput');
     
     const btnWho = document.getElementById('btn-who');
     const btnRules = document.getElementById('btn-rules');
@@ -392,7 +414,6 @@
             accessStatus.textContent = 'Загрузка интерфейса…';
             activateBtn.textContent = 'ДОСТУП АКТИВИРОВАН';
             
-            // ПАУЗА 4 СЕКУНДЫ ПЕРЕД ПОЯВЛЕНИЕМ ГЛАВНОГО МЕНЮ
             setTimeout(() => {
                 screenLoad.classList.remove('active');
                 screenMain.classList.add('active');
@@ -402,16 +423,22 @@
 
     // --- ПЕРЕХОДЫ МЕЖДУ ЭКРАНАМИ ---
     
-    // Кнопки главного меню (заглушки)
-    btnWho.addEventListener('click', () => alert('Информация о подразделении Elite Legion. История создания, цели и задачи.'));
-    btnRules.addEventListener('click', () => alert('Текст устава Elite Legion. Правила поведения, субординация, дисциплинарные взыскания.'));
+    // Кнопки главного меню (теперь выводят текст в блок, а не Alert)
+    btnWho.addEventListener('click', () => {
+        infoOutput.innerHTML = '<span style="color:var(--primary-red)">[ ELITE LEGION ]</span><br><br>Подразделение Elite Legion — это элитные силы специального назначения. Созданы для выполнения задач повышенной сложности, где обычные подразделения бессильны. Их девиз: "Мы там, где другие не пройдут".<br><br>Доступ к информации о составе подразделения ограничен.';
+        infoOutput.classList.add('visible');
+    });
+
+    btnRules.addEventListener('click', () => {
+        infoOutput.innerHTML = '<span style="color:var(--primary-red)">[ УСТАВ ELITE LEGION ]</span><br><br>1. Приказ старшего по званию — закон.<br>2. Не разглашать секретные данные.<br>3. Соблюдать субординацию.<br>4. Быть готовым к немедленному выполнению задачи.<br><br>Нарушение устава влечет за собой дисциплинарное взыскание.';
+        infoOutput.classList.add('visible');
+    });
     
     // Переход в вакансии
     btnJobs.addEventListener('click', () => {
+        infoOutput.classList.remove('visible'); // Убираем текст при переходе
         screenMain.classList.remove('active');
         screenJobs.classList.add('active');
-        
-        // Запускаем эффект печати текста только при входе на экран вакансий
         typeWriterEffect();
     });
 
@@ -419,40 +446,37 @@
     btnBackMain.addEventListener('click', () => {
         screenJobs.classList.remove('active');
         screenMain.classList.add('active');
+        infoOutput.classList.remove('visible'); // Скрываем текст
     });
 
     // --- МОДАЛЬНОЕ ОКНО И ЗАЯВКА ---
     
-    // Открытие формы
     btnApplyModal.addEventListener('click', () => {
-        // Пытаемся взять код вакансии из первой карточки
         const firstCardCode = document.querySelector('.job-code')?.textContent || 'UNKNOWN-VACANCY';
         jobCodeInput.value = firstCardCode;
         modal.style.display = 'flex';
     });
 
-    // Закрытие формы
     closeModalBtn.addEventListener('click', () => {
         modal.style.display = 'none';
     });
 
-    // Отправка формы
     applicationForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const nick = document.getElementById('userNickInput').value;
         const reason = document.getElementById('reasonInput').value;
         const code = jobCodeInput.value;
 
+        // Вместо alert теперь просто закрываем окно и можно добавить сообщение на экран
         alert(`Заявка принята!\n\nКод вакансии: ${code}\nНикнейм: ${nick}\nПричина: \${reason}\n\nОжидайте ответа от командования.`);
         modal.style.display = 'none';
         applicationForm.reset();
     });
 
-    // --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА (TYPEWRITER) ---
+    // --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА ---
     function typeWriterEffect() {
         const cards = document.querySelectorAll('.job-card');
         
-        // Очищаем текст перед анимацией
         cards.forEach(card => {
             card.querySelector('.job-code').textContent = '';
             card.querySelector('.job-desc').textContent = '';
@@ -465,7 +489,6 @@
             const codeText = card.getAttribute('data-code') || code.textContent;
             const descText = card.getAttribute('data-desc') || desc.textContent;
 
-            // Сохраняем оригинальные тексты в атрибуты
             if (!card.getAttribute('data-code')) card.setAttribute('data-code', codeText);
             if (!card.getAttribute('data-desc')) card.setAttribute('data-desc', descText);
 
