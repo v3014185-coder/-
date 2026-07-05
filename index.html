@@ -2,14 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Elite Legion - Interface</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Legion - CMD Interface</title>
     <style>
         :root {
             --primary-red: #ff0033;
             --bg-black: #000000;
             --panel-dark: #050505;
             --text-white: #ffffff;
-            --border-color: #333;
+            --border-color: #333333;
         }
 
         body {
@@ -40,7 +41,7 @@
             padding: 20px;
         }
 
-        /* --- ЭКРАНЫ --- */
+        /* --- Общие стили экранов --- */
         .screen {
             width: 100%;
             text-align: center;
@@ -56,7 +57,7 @@
             transform: translateY(0);
         }
 
-        /* --- ЗАГРУЗКА --- */
+        /* --- Экран загрузки --- */
         .status-text {
             color: var(--primary-red);
             font-size: 16px;
@@ -88,11 +89,11 @@
             text-align: center;
         }
 
-        /* --- КНОПКИ --- */
+        /* --- Кнопки --- */
         .btn {
             background: transparent;
             color: var(--primary-red);
-            border: 2px solid var(--primary-red);
+            border: 2px solid var(--border-color);
             padding: 15px 30px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
@@ -109,6 +110,7 @@
         .btn:hover {
             background: var(--primary-red);
             color: #000;
+            border-color: var(--primary-red);
             box-shadow: 0 0 20px rgba(255, 0, 51, 0.8);
         }
 
@@ -118,7 +120,7 @@
             border-color: #0f0;
         }
 
-        /* --- ГЛАВНОЕ МЕНЮ --- */
+        /* --- Главное меню --- */
         .menu-title {
             color: var(--primary-red);
             font-size: 18px;
@@ -139,7 +141,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- ЭКРАН ВАКАНСИЙ --- */
+        /* --- Экран вакансий --- */
         .jobs-title {
             color: var(--primary-red);
             font-size: 18px;
@@ -183,18 +185,19 @@
             gap: 10px;
         }
 
-        /* --- МОДАЛЬНОЕ ОКНО (ЗАЯВКА) --- */
+        /* --- Модальное окно (Заявка) --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            backdrop-filter: blur(2px);
         }
 
         .modal-content {
@@ -212,6 +215,7 @@
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            font-size: 16px;
         }
 
         .form-group {
@@ -224,6 +228,7 @@
             color: #aaa;
             font-size: 12px;
             margin-bottom: 5px;
+            text-transform: uppercase;
         }
 
         .form-input {
@@ -234,12 +239,13 @@
             padding: 10px;
             box-sizing: border-box;
             font-family: 'Courier New', monospace;
+            font-size: 14px;
         }
 
         .modal-btn {
             background: transparent;
             color: var(--primary-red);
-            border: 2px solid var(--primary-red);
+            border: 2px solid var(--border-color);
             padding: 10px 20px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
@@ -251,18 +257,14 @@
         .modal-btn.submit {
             background: var(--primary-red);
             color: black;
+            border-color: var(--primary-red);
         }
 
-        /* --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА --- */
-        .type-writer {
-            overflow: hidden;
-            border-right: 2px solid var(--primary-red);
-            white-space: nowrap;
-            letter-spacing: 2px;
-            display: inline-block;
-            animation: blink-caret 1s step-end infinite;
+        .modal-btn:hover {
+            filter: brightness(1.2);
         }
 
+        /* --- Эффект печатной машинки --- */
         @keyframes blink-caret {
             from, to { border-color: transparent; }
             50% { border-color: var(--primary-red); }
@@ -283,7 +285,7 @@
         <button id="activateBtn" class="btn" disabled>АКТИВИРОВАТЬ ДОСТУП</button>
     </div>
 
-    <!-- ГЛАВНОЕ МЕНЮ (НОВЫЙ ЭКРАН) -->
+    <!-- ГЛАВНОЕ МЕНЮ -->
     <div id="screen-main" class="screen">
         <div class="menu-title">[ ГЛАВНОЕ МЕНЮ ]</div>
         <div class="menu-grid">
@@ -321,8 +323,8 @@
         <div class="modal-title">[ ПОДАЧА ЗАЯВКИ ]</div>
         <form id="applicationForm">
             <div class="form-group">
-                <label class="form-label">КОД ВАКАНСИИ (автозаполнение)</label>
-                <input type="text" id="jobCodeInput" class="form-input" readonly value="">
+                <label class="form-label">КОД ВАКАНСИИ</label>
+                <input type="text" id="jobCodeInput" class="form-input" readonly value="LOADING...">
             </div>
             <div class="form-group">
                 <label class="form-label">ВАШ ID ИЛИ НИКНЕЙМ</label>
@@ -332,7 +334,7 @@
                 <label class="form-label">ПРИЧИНА ПОДАЧИ</label>
                 <input type="text" id="reasonInput" class="form-input" placeholder="Почему вы хотите вступить?" required>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 20px; text-align: center;">
                 <button type="submit" class="modal-btn submit">ОТПРАВИТЬ ДАННЫЕ</button>
                 <button type="button" id="closeModalBtn" class="modal-btn">ЗАКРЫТЬ</button>
             </div>
@@ -423,7 +425,7 @@
     
     // Открытие формы
     btnApplyModal.addEventListener('click', () => {
-        // Пытаемся взять код вакансии из первой карточки, если пусто - ставим заглушку
+        // Пытаемся взять код вакансии из первой карточки
         const firstCardCode = document.querySelector('.job-code')?.textContent || 'UNKNOWN-VACANCY';
         jobCodeInput.value = firstCardCode;
         modal.style.display = 'flex';
@@ -450,7 +452,7 @@
     function typeWriterEffect() {
         const cards = document.querySelectorAll('.job-card');
         
-        // Очищаем текст перед анимацией, чтобы он появился заново
+        // Очищаем текст перед анимацией
         cards.forEach(card => {
             card.querySelector('.job-code').textContent = '';
             card.querySelector('.job-desc').textContent = '';
@@ -460,10 +462,10 @@
             const code = card.querySelector('.job-code');
             const desc = card.querySelector('.job-desc');
             
-            const codeText = card.getAttribute('data-code') || code.textContent; // Берем из data-атрибута или текста
+            const codeText = card.getAttribute('data-code') || code.textContent;
             const descText = card.getAttribute('data-desc') || desc.textContent;
 
-            // Сохраняем оригинальные тексты в атрибуты, чтобы анимация работала корректно при повторном входе
+            // Сохраняем оригинальные тексты в атрибуты
             if (!card.getAttribute('data-code')) card.setAttribute('data-code', codeText);
             if (!card.getAttribute('data-desc')) card.setAttribute('data-desc', descText);
 
