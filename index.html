@@ -25,7 +25,6 @@
             user-select: none;
         }
 
-        /* --- Общие слои и границы --- */
         .screen-container {
             width: 100%;
             max-width: 800px;
@@ -41,12 +40,13 @@
             overflow: hidden;
         }
 
+        /* Шум (noise) */
         .noise-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
             pointer-events: none;
-            z-index: 100;
+            z-index: 999;
             mix-blend-mode: overlay;
         }
 
@@ -59,18 +59,56 @@
             z-index: 10;
         }
 
-        /* --- Системный Лог (Идея 3) --- */
+        /* Глитч-слой */
+        .glitch-effect {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 51, 0.35);
+            z-index: 1000;
+            pointer-events: none;
+            display: none;
+            isolation: isolate;
+        }
+        .glitch-active {
+            display: block;
+        }
+
+        /* Цветные сдвиги (RGB split) */
+        .glitch-effect::before,
+        .glitch-effect::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .glitch-active::before {
+            mix-blend-mode: difference;
+            filter: hue-rotate(180deg);
+            clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+            animation: glitchShift 0.15s infinite alternate;
+        }
+        .glitch-active::after {
+            mix-blend-mode: screen;
+            clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+            animation: glitchShift 0.18s infinite alternate reverse;
+        }
+        @keyframes glitchShift {
+            from { transform: translateX(-15px) translateY(-15px); }
+            to   { transform: translateX(15px) translateY(15px); }
+        }
+
+        /* Системный лог */
         .system-log-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 20px; right: 20px;
             width: 250px;
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid #333;
             color: #ff0033;
             font-size: 12px;
             padding: 10px;
-            z-index: 1000;
+            z-index: 2000;
             box-shadow: 0 0 15px rgba(255, 0, 51, 0.2);
             overflow-y: auto;
             max-height: 300px;
@@ -95,7 +133,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
-        /* --- Меню и Контейнеры --- */
+        /* Меню */
         .menu-box {
             width: 100%;
             max-width: 600px;
@@ -105,7 +143,6 @@
             text-align: center;
             z-index: 20;
         }
-
         .section-title {
             font-size: 14px;
             text-transform: uppercase;
@@ -115,7 +152,6 @@
             font-weight: bold;
             text-shadow: 0 0 5px rgba(255, 0, 51, 0.8);
         }
-
         .text-area {
             background-color: #000;
             color: var(--primary-red);
@@ -131,16 +167,12 @@
             position: relative;
             z-index: 2;
             overflow-y: auto;
-            scrollbar-width: none; 
+            scrollbar-width: none;
         }
         .text-area::-webkit-scrollbar { display: none; }
-        
-        /* --- Вакансии (Идея 4) --- */
-        .vacancy-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+
+        /* Вакансии */
+        .vacancy-list { list-style: none; padding: 0; margin: 0; }
         .vacancy-item {
             background: #0f0f0f;
             border-left: 3px solid #ff0033;
@@ -172,167 +204,79 @@
             border-bottom: 1px dashed #333;
             padding-bottom: 2px;
         }
-        .vacancy-item span {
-            font-size: 12px;
-            color: #aaa;
-        }
-        /* Индикатор риска */
+        .vacancy-item span { font-size: 12px; color: #aaa; }
         .risk-indicator {
-            position: absolute;
-            right: 10px;
-            top: 50%;
+            position: absolute; right: 10px; top: 50%;
             transform: translateY(-50%);
-            width: 4px;
-            height: 20px;
-            background: #333;
-            border-radius: 2px;
-            overflow: hidden;
+            width: 4px; height: 20px;
+            background: #333; border-radius: 2px; overflow: hidden;
         }
         .risk-fill {
-            height: 0%;
-            width: 100%;
-            background: var(--primary-red);
+            height: 0%; width: 100%; background: var(--primary-red);
             transition: height 0.5s ease;
         }
-        .vacancy-item:hover .risk-fill {
-            height: 100%;
-        }
+        .vacancy-item:hover .risk-fill { height: 100%; }
 
-        /* --- Кнопки --- */
+        /* Кнопки */
         .btn {
-            background: transparent;
-            color: var(--primary-red);
+            background: transparent; color: var(--primary-red);
             border: 2px solid var(--primary-red);
-            padding: 15px 30px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100%;
-            margin-bottom: 10px;
-            transition: all 0.2s;
+            padding: 15px 30px; font-family: 'Courier New', monospace;
+            font-size: 14px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+            width: 100%; margin-bottom: 10px; transition: all 0.2s;
             box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
-            position: relative;
-            z-index: 2;
+            position: relative; z-index: 2;
         }
         .btn:hover {
-            background: var(--primary-red);
-            color: #000;
+            background: var(--primary-red); color: #000;
             box-shadow: 0 0 20px rgba(255, 0, 51, 0.8);
         }
-
         .btn-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            width: 100%;
+            display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%;
         }
-        @media (min-width: 600px) {
-            .btn-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        @media (min-width: 600px) { .btn-grid { grid-template-columns: 1fr 1fr; } }
 
-        /* --- Экран загрузки и Прогресс-бар (Идея 2) --- */
-        .loader-container {
-            text-align: center;
-            width: 100%;
-        }
+        /* Прогресс-бар */
         .progress-bar-bg {
-            width: 100%;
-            height: 10px;
-            background: #000;
-            border: 1px solid #333;
-            margin-top: 20px;
-            overflow: hidden;
+            width: 100%; height: 10px; background: #000;
+            border: 1px solid #333; margin-top: 20px; overflow: hidden;
         }
         .progress-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: var(--primary-red);
+            width: 0%; height: 100%; background: var(--primary-red);
             transition: width 2s ease-out;
         }
         .access-status {
-            margin-top: 10px;
-            color: #555;
-            font-size: 12px;
+            margin-top: 10px; color: #555; font-size: 12px;
         }
 
-        /* --- Модальное окно (Идея 5) --- */
+        /* Модальное окно */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none;
+            justify-content: center; align-items: center; z-index: 3000;
             backdrop-filter: blur(5px);
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
         .modal-content {
-            background: #000;
-            border: 2px solid var(--primary-red);
-            padding: 30px;
-            width: 400px;
-            color: #fff;
-            text-align: center;
+            background: #000; border: 2px solid var(--primary-red);
+            padding: 30px; width: 400px; color: #fff; text-align: center;
         }
-        .form-group {
-            text-align: left;
-            margin-bottom: 15px;
-        }
+        .form-group { text-align: left; margin-bottom: 15px; }
         .form-group label {
-            display: block;
-            color: var(--primary-red);
-            margin-bottom: 5px;
+            display: block; color: var(--primary-red); margin-bottom: 5px;
             font-size: 12px;
         }
         .form-group input {
-            width: 100%;
-            background: #111;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 8px;
-            font-family: inherit;
+            width: 100%; background: #111; border: 1px solid #333;
+            color: #fff; padding: 8px; font-family: inherit;
         }
         .submit-loader {
-            display: none;
-            color: var(--primary-red);
-            margin-top: 10px;
-            font-size: 12px;
+            display: none; color: var(--primary-red);
+            margin-top: 10px; font-size: 12px;
         }
 
-        /* --- Эффект Глитча (Идея 1) --- */
-        .glitch-effect {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,0,51,0.1);
-            z-index: 1000;
-            pointer-events: none;
-            opacity: 0;
-            display: none;
-        }
-        .glitch-active {
-            display: block;
-            animation: glitchAnim 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-        }
-        @keyframes glitchAnim {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -340,11 +284,10 @@
     <div class="screen-container">
         <div class="noise-overlay"></div>
         <div class="screen-border"></div>
-        
-        <!-- Эффект глитча -->
+        <!-- Глитч-эффект (RGB + тряска) -->
         <div class="glitch-effect" id="glitch-layer"></div>
 
-        <!-- ЭКРАН 1: Старт с прогресс-баром -->
+        <!-- ЭКРАН 1: Старт -->
         <div id="start-menu" class="menu-box">
             <div class="section-title">[ СИСТЕМА ЗАГРУЖАЕТСЯ ]</div>
             <p style="margin-bottom: 30px; color: #555;">Ожидание авторизации...</p>
@@ -369,7 +312,7 @@
         <!-- ЭКРАН 3: Кто такие ELITE -->
         <div id="text-menu" class="menu-box hidden">
             <div class="section-title">[ ИНФОРМАЦИЯ: КТО ТАКИЕ ELITE ]</div>
-            <div class="text-area" data-text="ELITE - Гвардия отдела Metro Police Forces и Overwatch Transhuman Arms, одно из подразделений, созданное Генеральным Штабом Сити-17. В данное подразделение входят строго лучшие юниты из рядов всех Гарнизонов ГО и OTA. Подразделение имеет дополнительные корпуса: Корпус юстиции и Корпус командования. Подразделение занимается строгим надзором за соблюдением устава среди остальных юнитов ГО, а в случае нарушения — его пресечением и вынесением приговора. Для остальных юнитов ГО они являются строгим образцом и фигурой ГО, на которую стоит ровняться."></div>
+            <div class="text-area" data-text="ELITE — Гвардия отдела Metro Police Forces и Overwatch Transhuman Arms, одно из подразделений, созданное Генеральным Штабом Сити-17. В данное подразделение входят строго лучшие юниты из рядов всех Гарнизонов ГО и OTA. Подразделение имеет дополнительные корпуса: Корпус юстиции и Корпус командования. Подразделение занимается строгим надзором за соблюдением устава среди остальных юнитов ГО, а в случае нарушения — его пресечением и вынесением приговора. Для остальных юнитов ГО они являются строгим образцом и фигурой ГО, на которую стоит ровняться."></div>
             <button id="btn-back-who" class="btn">НАЗАД</button>
         </div>
 
@@ -378,253 +321,3 @@
             <div class="section-title">[ ИНФОРМАЦИЯ: УСТАВ ]</div>
             <div class="text-area" data-text="Устав — это свод правил, который задаёт порядок работы и поведения в какой‑либо организации или структуре. В Уставе есть 8 пунктов. Он регламентирует все аспекты деятельности подразделения, включая субординацию, применение силы и порядок взаимодействия с гражданскими лицами."></div>
             <div style="margin-bottom: 15px; text-align: left;">
-                <a href="#" target="_blank" style="color: #ff0033; text-decoration: none; border-bottom: 1px dashed #ff0033;">ОТКРЫТЬ УСТАВ (MOCK)</a>
-            </div>
-            <button id="btn-back-rules" class="btn">НАЗАД</button>
-        </div>
-
-        <!-- ЭКРАН 5: Вакансии -->
-        <div id="jobs-menu" class="menu-box hidden">
-            <div class="section-title">[ ДОСТУПНЫЕ ВАКАНСИИ ]</div>
-            <div class="text-area">
-                <ul class="vacancy-list">
-                    <li class="vacancy-item">
-                        <strong>C17.MPF.ELITE.JURY.OFC</strong>
-                        <span>Юнит Гражданской Обороны MPF (Элит/ELITE). Слежка за соблюдением устава сотрудников Г.О., поддержание порядка и дисциплины.</span>
-                        <div class="risk-indicator"><div class="risk-fill" style="height: 40%;"></div></div>
-                    </li>
-                    <li class="vacancy-item">
-                        <strong>C17.MPF.ELITE.CMD.OFC</strong>
-                        <span>Офицер командования ELITE. Координация действий групп и принятие решений в критических ситуациях.</span>
-                        <div class="risk-indicator"><div class="risk-fill" style="height: 60%;"></div></div>
-                    </li>
-                    <li class="vacancy-item">
-                        <strong>C17.OTA.ELITE.LEGION</strong>
-                        <span>Экспериментальные единицы ОТА, используемые для защиты города и приоритетных лиц. Высокий уровень угрозы.</span>
-                        <div class="risk-indicator"><div class="risk-fill" style="height: 90%;"></div></div>
-                    </li>
-                </ul>
-            </div>
-            <button id="btn-apply-global" class="btn" style="background: #ff0033; color: #000;">ПОДАТЬ ЗАЯВКУ НА ВАКАНСИЮ</button>
-            <button id="btn-back-jobs" class="btn">НАЗАД</button>
-        </div>
-    </div>
-
-    <!-- Системный Лог -->
-    <div class="system-log-container">
-        <div class="log-header">[ SYSTEM LOG ]</div>
-        <div class="log-content" id="system-log">
-            <!-- Логи будут добавляться сюда -->
-        </div>
-    </div>
-
-    <!-- Модальное окно заявки -->
-    <div class="modal-overlay" id="apply-modal">
-        <div class="modal-content">
-            <h3 style="color: var(--primary-red); margin-bottom: 20px;">ФОРМА ЗАЯВКИ</h3>
-            <div class="form-group">
-                <label>ID ЮНИТА / ПСЕВДОНИМ</label>
-                <input type="text" placeholder="Введите ID или позывной">
-            </div>
-            <div class="form-group">
-                <label>ПРИЧИНА ПОДАЧИ</label>
-                <input type="text" placeholder="Кратко: почему вы подходите">
-            </div>
-            <div class="form-group">
-                <label>ТЕКУЩИЙ СТАТУС</label>
-                <input type="text" placeholder="Гражданский / Рекрут / ...">
-            </div>
-            <button id="submit-app" class="btn" style="width: auto; padding: 10px 20px;">ОТПРАВИТЬ ДАННЫЕ</button>
-            <div class="submit-loader" id="submit-loader">
-                [SYSTEM] ОТПРАВКА ПАКЕТА... [██████████] 98%
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            // --- Элементы ---
-            const startMenu = document.getElementById('start-menu');
-            const buttonsMenu = document.getElementById('buttons-menu');
-            const textMenu = document.getElementById('text-menu');
-            const rulesMenu = document.getElementById('rules-menu');
-            const jobsMenu = document.getElementById('jobs-menu');
-            const glitchLayer = document.getElementById('glitch-layer');
-            const logContainer = document.getElementById('system-log');
-            const modal = document.getElementById('apply-modal');
-            const submitBtn = document.getElementById('submit-app');
-            const loader = document.getElementById('submit-loader');
-
-            const activateBtn = document.getElementById('activate-btn');
-            const btnWho = document.getElementById('btn-who');
-            const btnRules = document.getElementById('btn-rules');
-            const btnJobs = document.getElementById('btn-jobs');
-            const btnApplyGlobal = document.getElementById('btn-apply-global');
-
-            const btnBackWho = document.getElementById('btn-back-who');
-            const btnBackRules = document.getElementById('btn-back-rules');
-            const btnBackJobs = document.getElementById('btn-back-jobs');
-
-            const mainTextDisplay = document.getElementById('main-text-display');
-            const progressFill = document.getElementById('progress-fill');
-            const statusText = document.getElementById('status-text');
-
-            let typingTimers = [];
-
-            // --- Утилиты ---
-            function stopTyping() {
-                typingTimers.forEach(timer => clearTimeout(timer));
-                typingTimers = [];
-            }
-
-            function typeWriter(element) {
-                stopTyping();
-                element.innerHTML = '';
-                const text = element.getAttribute('data-text');
-                if (!text) return;
-
-                let i = 0;
-                const speed = 25;
-                function type() {
-                    if (i < text.length) {
-                        element.textContent += text.charAt(i);
-                        i++;
-                        const timer = setTimeout(type, speed);
-                        typingTimers.push(timer);
-                    }
-                }
-                type();
-            }
-
-            // --- Системный Лог (Идея 3) ---
-            function addSystemLog(message) {
-                const entry = document.createElement('div');
-                entry.className = 'log-entry';
-                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                entry.textContent = `[${time}] ${message}`;
-                logContainer.appendChild(entry);
-                logContainer.scrollTop = logContainer.scrollHeight;
-                if (logContainer.children.length > 10) {
-                    logContainer.removeChild(logContainer.firstChild);
-                }
-            }
-
-            // --- Эффект Глитча (Идея 1) ---
-            function triggerGlitch() {
-                glitchLayer.classList.add('glitch-active');
-                setTimeout(() => {
-                    glitchLayer.classList.remove('glitch-active');
-                }, 300);
-            }
-
-            // --- Прогресс-бар (Идея 2) ---
-            function startLoading() {
-                let width = 0;
-                const loadInterval = setInterval(() => {
-                    if (width >= 100) {
-                        clearInterval(loadInterval);
-                        statusText.textContent = "[ ДОСТУП: РАЗРЕШЕН ]";
-                        addSystemLog('ACCESS GRANTED. SYSTEM ONLINE.');
-                    } else {
-                        width += Math.random() * 3; // Неравномерная загрузка
-                        if(width > 100) width = 100;
-                        progressFill.style.width = width + '%';
-                    }
-                }, 50);
-            }
-
-            // --- Навигация ---
-            function showScreenAndType(targetScreen) {
-                // Скрываем все
-                [textMenu, rulesMenu, jobsMenu, buttonsMenu].forEach(el => el.classList.add('hidden'));
-                // Показываем целевое
-                targetScreen.classList.remove('hidden');
-                
-                // Глитч при переходе
-                triggerGlitch();
-                
-                // Лог
-                if(targetScreen === jobsMenu) addSystemLog('ACCESSING JOBS DATABASE...');
-                if(targetScreen === textMenu) addSystemLog('LOADING ELITE PROFILE...');
-                if(targetScreen === rulesMenu) addSystemLog('LOADING REGULATIONS...');
-
-                // Анимация текста
-                const textBlock = targetScreen.querySelector('.text-area');
-                if (textBlock && textBlock.hasAttribute('data-text')) {
-                    typeWriter(textBlock);
-                }
-            }
-
-            // --- Обработчики событий ---
-            activateBtn.addEventListener('click', () => {
-                startLoading();
-                activateBtn.disabled = true;
-                activateBtn.style.opacity = '0.5';
-                
-                setTimeout(() => {
-                    startMenu.classList.add('hidden');
-                    buttonsMenu.classList.remove('hidden');
-                    mainTextDisplay.setAttribute('data-text', 'Система ELITE Legion активна. Выберите интересующий раздел информации.');
-                    typeWriter(mainTextDisplay);
-                    addSystemLog('SYSTEM INITIALIZED. MAIN MENU LOADED.');
-                }, 2500); // Ждем окончания анимации загрузки
-            });
-
-            btnWho.addEventListener('click', () => showScreenAndType(textMenu));
-            btnRules.addEventListener('click', () => showScreenAndType(rulesMenu));
-            btnJobs.addEventListener('click', () => showScreenAndType(jobsMenu));
-
-            btnBackWho.addEventListener('click', () => {
-                stopTyping();
-                textMenu.classList.add('hidden');
-                buttonsMenu.classList.remove('hidden');
-                typeWriter(mainTextDisplay);
-                addSystemLog('RETURNED TO MAIN MENU.');
-            });
-
-            btnBackRules.addEventListener('click', () => {
-                stopTyping();
-                rulesMenu.classList.add('hidden');
-                buttonsMenu.classList.remove('hidden');
-                typeWriter(mainTextDisplay);
-                addSystemLog('RETURNED TO MAIN MENU.');
-            });
-
-            btnBackJobs.addEventListener('click', () => {
-                stopTyping();
-                jobsMenu.classList.add('hidden');
-                buttonsMenu.classList.remove('hidden');
-                typeWriter(mainTextDisplay);
-                addSystemLog('RETURNED TO MAIN MENU.');
-            });
-
-            // --- Модальное окно (Идея 5) ---
-            btnApplyGlobal.addEventListener('click', () => {
-                modal.classList.add('active');
-                addSystemLog('APPLICATION FORM REQUESTED.');
-            });
-
-            submitBtn.addEventListener('click', () => {
-                // Имитация отправки
-                submitBtn.style.display = 'none';
-                loader.style.display = 'block';
-                
-                setTimeout(() => {
-                    loader.textContent = '[SYSTEM] PACKET SENT TO GENSTAB.';
-                    addSystemLog('APPLICATION SUBMITTED SUCCESSFULLY.');
-                    
-                    setTimeout(() => {
-                        modal.classList.remove('active');
-                        submitBtn.style.display = 'block';
-                        loader.style.display = 'none';
-                        loader.textContent = '[SYSTEM] ОТПРАВКА ПАКЕТА... [██████████] 98%';
-                    }, 2000);
-                }, 1500);
-            });
-
-            // Инициализация лога
-            addSystemLog('SYSTEM STARTUP SEQUENCE...');
-        });
-    </script>
-</body>
-</html>
