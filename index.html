@@ -39,30 +39,23 @@
             padding: 20px;
         }
 
-        /* --- ЭКРАНЫ И АНИМАЦИИ --- */
-        .menu-box {
+        /* Скрываем экраны по умолчанию, показываем только активный */
+        .screen {
             width: 100%;
             text-align: center;
-            display: none; /* Скрыты по умолчанию */
+            display: none;
             opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        .menu-box.active {
+        .screen.active {
             display: block;
             opacity: 1;
             transform: translateY(0);
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* --- СТИЛИ ЗАГРУЗКИ --- */
+        /* Стили для загрузки */
         .status-text {
             color: var(--primary-red);
             font-size: 16px;
@@ -94,7 +87,7 @@
             text-align: center;
         }
 
-        /* --- КНОПКИ --- */
+        /* Стили кнопок */
         .btn {
             background: transparent;
             color: var(--primary-red);
@@ -109,6 +102,7 @@
             width: 100%;
             transition: all 0.2s;
             box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
+            margin-bottom: 10px;
         }
 
         .btn:hover {
@@ -123,26 +117,33 @@
             border-color: #0f0;
         }
 
-        /* --- СТИЛИ МЕНЮ --- */
-        .section-title {
+        /* Стили меню (строго как на скрине) */
+        .menu-title {
             color: var(--primary-red);
+            font-size: 16px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 15px;
-            font-size: 14px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            display: inline-block;
         }
-        
-        .text-area {
-            background: #000;
-            color: var(--primary-red);
-            border: 1px solid #333;
-            padding: 20px;
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
             width: 100%;
-            text-align: left;
             margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
-            min-height: 150px;
+        }
+
+        .menu-grid .btn {
+            width: 100%;
+        }
+
+        .menu-full-btn {
+            width: 100%;
+            margin-top: 0;
         }
     </style>
 </head>
@@ -150,8 +151,8 @@
 
 <div class="screen-container">
     
-    <!-- ЭКРАН 1: ЗАГРУЗКА -->
-    <div id="screen-load" class="menu-box active">
+    <!-- ЭКРАН ЗАГРУЗКИ -->
+    <div id="screen-load" class="screen active">
         <div class="status-text" id="statusText">[ СИСТЕМА ЗАГРУЖАЕТСЯ ]</div>
         <div class="progress-bar-bg">
             <div class="progress-bar-fill" id="progressFill"></div>
@@ -160,69 +161,35 @@
         <button id="activateBtn" class="btn" disabled>АКТИВИРОВАТЬ ДОСТУП</button>
     </div>
 
-    <!-- ЭКРАН 2: ГЛАВНОЕ МЕНЮ -->
-    <div id="screen-main" class="menu-box">
-        <div class="section-title">[ ГЛАВНОЕ МЕНЮ ]</div>
-        <div class="text-area">
-            Добро пожаловать в систему Elite Legion. Выберите раздел для получения информации.
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+    <!-- ГЛАВНОЕ МЕНЮ (ТОЧНО КАК НА СКРИНЕ) -->
+    <div id="screen-main" class="screen">
+        <div class="menu-title">[ ГЛАВНОЕ МЕНЮ ]</div>
+        <div class="menu-grid">
             <button id="btn-who" class="btn">КТО ТАКИЕ ELITE?</button>
             <button id="btn-rules" class="btn">УСТАВ</button>
         </div>
-        <button id="btn-jobs" class="btn" style="margin-top: 10px;">ВАКАНСИИ</button>
-    </div>
-
-    <!-- ЭКРАН 3: ИНФОРМАЦИЯ -->
-    <div id="screen-info" class="menu-box">
-        <div class="section-title">[ ИНФОРМАЦИЯ ]</div>
-        <div class="text-area" id="infoContent"></div>
-        <button id="btn-back-info" class="btn">НАЗАД В МЕНЮ</button>
-    </div>
-
-    <!-- ЭКРАН 4: ВАКАНСИИ -->
-    <div id="screen-jobs" class="menu-box">
-        <div class="section-title">[ ВАКАНСИИ ]</div>
-        <div class="text-area">
-            <p><strong>C17.MPF.ELITE.JURY.OFC</strong><br>
-            Юнит Гражданской Обороны. Слежка за соблюдением устава.</p>
-            <hr style="border-color: #333; margin: 10px 0;">
-            <p><strong>C17.OTA.ELITE.LEGION</strong><br>
-            Экспериментальные единицы ОТА. Высокий уровень угрозы.</p>
-        </div>
-        <button id="btn-apply" class="btn" style="background: var(--primary-red); color: #000;">ПОДАТЬ ЗАЯВКУ</button>
-        <button id="btn-back-jobs" class="btn" style="margin-top: 10px;">НАЗАД В МЕНЮ</button>
+        <button id="btn-jobs" class="btn menu-full-btn">ВАКАНСИИ</button>
     </div>
 
 </div>
 
 <script>
-    // --- Элементы ---
+    // Элементы загрузки
     const statusText = document.getElementById('statusText');
     const progressFill = document.getElementById('progressFill');
     const accessStatus = document.getElementById('accessStatus');
     const activateBtn = document.getElementById('activateBtn');
 
-    const btnWho = document.getElementById('btn-who');
-    const btnRules = document.getElementById('btn-rules');
-    const btnJobs = document.getElementById('btn-jobs');
-    const btnBackInfo = document.getElementById('btn-back-info');
-    const btnBackJobs = document.getElementById('btn-back-jobs');
-    const btnApply = document.getElementById('btn-apply');
-
+    // Элементы экранов
     const screenLoad = document.getElementById('screen-load');
     const screenMain = document.getElementById('screen-main');
-    const screenInfo = document.getElementById('screen-info');
-    const screenJobs = document.getElementById('screen-jobs');
-    const infoContent = document.getElementById('infoContent');
 
-    // --- ЛОГИКА ЗАГРУЗКИ ---
+    // Логика прогресс-бара
     function startLoading() {
         let width = 0;
         const interval = setInterval(() => {
             width += Math.random() * 10;
             if (width > 100) width = 100;
-            
             progressFill.style.width = width + '%';
             
             if (width >= 100) {
@@ -234,7 +201,7 @@
         }, 100);
     }
 
-    // --- ЛОГИКА АКТИВАЦИИ (С ПАУЗОЙ) ---
+    // Логика активации с паузой
     activateBtn.addEventListener('click', () => {
         activateBtn.disabled = true;
         activateBtn.textContent = 'ПРОВЕРКА ДОСТУПА…';
@@ -245,40 +212,20 @@
             accessStatus.textContent = 'Загрузка интерфейса…';
             activateBtn.textContent = 'ДОСТУП АКТИВИРОВАН';
             
-            // ПАУЗА ПЕРЕД ПОЯВЛЕНИЕМ МЕНЮ (4000 мс = 4 секунды)
+            // ПАУЗА 4 СЕКУНДЫ (4000 мс) — как ты просил
             setTimeout(() => {
                 screenLoad.classList.remove('active');
                 screenMain.classList.add('active');
-            }, 4000); 
+            }, 4000);
         }, 1500);
     });
 
-    // --- НАВИГАЦИЯ ---
-    function showScreen(id) {
-        document.querySelectorAll('.menu-box').forEach(el => el.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
+    // Заглушки для кнопок (чтобы при клике не было ошибок)
+    document.getElementById('btn-who').addEventListener('click', () => alert('Информация о подразделении Elite'));
+    document.getElementById('btn-rules').addEventListener('click', () => alert('Текст устава'));
+    document.getElementById('btn-jobs').addEventListener('click', () => alert('Список вакансий'));
 
-    btnWho.addEventListener('click', () => {
-        infoContent.textContent = 'ELITE — Гвардия отдела Metro Police Forces. Подразделение занимается строгим надзором за соблюдением устава среди остальных юнитов ГО.';
-        showScreen('screen-info');
-    });
-
-    btnRules.addEventListener('click', () => {
-        infoContent.textContent = 'Устав — это свод правил, регламентирующий все аспекты деятельности подразделения, включая субординацию и применение силы.';
-        showScreen('screen-info');
-    });
-
-    btnJobs.addEventListener('click', () => showScreen('screen-jobs'));
-    btnBackInfo.addEventListener('click', () => showScreen('screen-main'));
-    btnBackJobs.addEventListener('click', () => showScreen('screen-main'));
-    
-    btnApply.addEventListener('click', () => {
-        alert('Заявка отправлена в штаб. Ожидайте ответа.');
-        showScreen('screen-main');
-    });
-
-    // Запуск
+    // Старт
     startLoading();
 </script>
 
