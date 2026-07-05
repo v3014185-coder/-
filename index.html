@@ -9,12 +9,13 @@
             --bg-black: #000000;
             --panel-dark: #050505;
             --text-white: #ffffff;
+            --border-color: #333;
         }
 
         body {
             background-color: var(--bg-black);
             color: var(--text-white);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Courier New', Courier, monospace; /* Строгий шрифт терминала */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -29,7 +30,7 @@
             max-width: 600px;
             min-height: 500px;
             background-color: var(--panel-dark);
-            border: 2px solid #333;
+            border: 2px solid var(--border-color);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -39,13 +40,13 @@
             padding: 20px;
         }
 
-        /* Скрываем экраны по умолчанию, показываем только активный */
+        /* --- ЭКРАНЫ --- */
         .screen {
             width: 100%;
             text-align: center;
             display: none;
             opacity: 0;
-            transform: translateY(15px);
+            transform: translateY(20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
@@ -55,7 +56,7 @@
             transform: translateY(0);
         }
 
-        /* Стили для загрузки */
+        /* --- ЗАГРУЗКА --- */
         .status-text {
             color: var(--primary-red);
             font-size: 16px;
@@ -68,7 +69,7 @@
             width: 100%;
             height: 8px;
             background: #000;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             margin-bottom: 20px;
             overflow: hidden;
         }
@@ -87,7 +88,6 @@
             text-align: center;
         }
 
-        /* Стили кнопок */
         .btn {
             background: transparent;
             color: var(--primary-red);
@@ -117,33 +117,68 @@
             border-color: #0f0;
         }
 
-        /* Стили меню (строго как на скрине) */
+        /* --- СТИЛИ МЕНЮ (КАК НА СКРИНЕ) --- */
         .menu-title {
             color: var(--primary-red);
-            font-size: 16px;
+            font-size: 18px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin-bottom: 25px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
             display: inline-block;
+            font-weight: bold;
         }
 
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+        .job-card {
+            background: #000;
+            border: 1px solid var(--border-color);
+            color: var(--primary-red);
             width: 100%;
-            margin-bottom: 20px;
+            text-align: left;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
-        .menu-grid .btn {
-            width: 100%;
+        .job-code {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
         }
 
-        .menu-full-btn {
+        .job-desc {
+            font-size: 12px;
+            color: #aaa;
+            line-height: 1.4;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-full {
             width: 100%;
-            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        /* --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА --- */
+        .type-writer {
+            overflow: hidden;
+            border-right: 2px solid var(--primary-red);
+            white-space: nowrap;
+            letter-spacing: 2px;
+            display: inline-block;
+            animation: blink-caret 1s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--primary-red); }
         }
     </style>
 </head>
@@ -161,30 +196,44 @@
         <button id="activateBtn" class="btn" disabled>АКТИВИРОВАТЬ ДОСТУП</button>
     </div>
 
-    <!-- ГЛАВНОЕ МЕНЮ (ТОЧНО КАК НА СКРИНЕ) -->
-    <div id="screen-main" class="screen">
-        <div class="menu-title">[ ГЛАВНОЕ МЕНЮ ]</div>
-        <div class="menu-grid">
-            <button id="btn-who" class="btn">КТО ТАКИЕ ELITE?</button>
-            <button id="btn-rules" class="btn">УСТАВ</button>
+    <!-- ЭКРАН ВАКАНСИЙ (ТОТ САМЫЙ С СКРИНА) -->
+    <div id="screen-jobs" class="screen">
+        <div class="menu-title">[ ВАКАНСИИ ]</div>
+        
+        <!-- Карточка 1 -->
+        <div class="job-card">
+            <span class="job-code">C17.MPF.ELITE.JURY.OFC</span>
+            <span class="job-desc">Юнит Гражданской Обороны. Слежка за соблюдением устава.</span>
         </div>
-        <button id="btn-jobs" class="btn menu-full-btn">ВАКАНСИИ</button>
+
+        <!-- Карточка 2 -->
+        <div class="job-card">
+            <span class="job-code">C17.OTA.ELITE.LEGION</span>
+            <span class="job-desc">Экспериментальные единицы ОТА. Высокий уровень угрозы.</span>
+        </div>
+
+        <div class="action-buttons">
+            <button id="btn-apply" class="btn btn-full">ПОДАТЬ ЗАЯВКУ</button>
+            <button id="btn-back" class="btn btn-full">НАЗАД В МЕНЮ</button>
+        </div>
     </div>
 
 </div>
 
 <script>
-    // Элементы загрузки
+    // --- Элементы ---
     const statusText = document.getElementById('statusText');
     const progressFill = document.getElementById('progressFill');
     const accessStatus = document.getElementById('accessStatus');
     const activateBtn = document.getElementById('activateBtn');
 
-    // Элементы экранов
     const screenLoad = document.getElementById('screen-load');
-    const screenMain = document.getElementById('screen-main');
+    const screenJobs = document.getElementById('screen-jobs');
+    
+    const btnApply = document.getElementById('btn-apply');
+    const btnBack = document.getElementById('btn-back');
 
-    // Логика прогресс-бара
+    // --- ЛОГИКА ЗАГРУЗКИ ---
     function startLoading() {
         let width = 0;
         const interval = setInterval(() => {
@@ -201,7 +250,7 @@
         }, 100);
     }
 
-    // Логика активации с паузой
+    // --- ЛОГИКА АКТИВАЦИИ ---
     activateBtn.addEventListener('click', () => {
         activateBtn.disabled = true;
         activateBtn.textContent = 'ПРОВЕРКА ДОСТУПА…';
@@ -212,18 +261,63 @@
             accessStatus.textContent = 'Загрузка интерфейса…';
             activateBtn.textContent = 'ДОСТУП АКТИВИРОВАН';
             
-            // ПАУЗА 4 СЕКУНДЫ (4000 мс) — как ты просил
+            // ПАУЗА 4 СЕКУНДЫ ПЕРЕД ПОЯВЛЕНИЕМ МЕНЮ
             setTimeout(() => {
                 screenLoad.classList.remove('active');
-                screenMain.classList.add('active');
+                screenJobs.classList.add('active');
+                
+                // ЗАПУСКАЕМ ЭФФЕКТ ПЕЧАТИ ТЕКСТА
+                typeWriterEffect();
             }, 4000);
         }, 1500);
     });
 
-    // Заглушки для кнопок (чтобы при клике не было ошибок)
-    document.getElementById('btn-who').addEventListener('click', () => alert('Информация о подразделении Elite'));
-    document.getElementById('btn-rules').addEventListener('click', () => alert('Текст устава'));
-    document.getElementById('btn-jobs').addEventListener('click', () => alert('Список вакансий'));
+    // --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА (TYPEWRITER) ---
+    function typeWriterEffect() {
+        const cards = document.querySelectorAll('.job-card');
+        
+        cards.forEach((card, index) => {
+            const code = card.querySelector('.job-code');
+            const desc = card.querySelector('.job-desc');
+            
+            const codeText = code.textContent;
+            const descText = desc.textContent;
+            
+            code.textContent = '';
+            desc.textContent = '';
+            
+            // Печатаем код
+            let i = 0;
+            const printCode = setInterval(() => {
+                if (i < codeText.length) {
+                    code.textContent += codeText.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(printCode);
+                    // Печатаем описание с небольшой задержкой
+                    let j = 0;
+                    const printDesc = setInterval(() => {
+                        if (j < descText.length) {
+                            desc.textContent += descText.charAt(j);
+                            j++;
+                        } else {
+                            clearInterval(printDesc);
+                        }
+                    }, 30); // Скорость печати описания
+                }
+            }, 50); // Скорость печати кода
+        });
+    }
+
+    // --- ОБРАБОТЧИКИ КНОПОК ---
+    btnApply.addEventListener('click', () => {
+        alert('Заявка отправлена в штаб. Ожидайте ответа.');
+    });
+
+    btnBack.addEventListener('click', () => {
+        // Здесь можно добавить логику возврата в главное меню, если оно будет
+        alert('Возврат в главное меню...');
+    });
 
     // Старт
     startLoading();
