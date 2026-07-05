@@ -32,7 +32,6 @@
             box-sizing: border-box;
         }
 
-        /* Эффект включения экрана */
         .power-up-layer {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -106,7 +105,6 @@
             position: relative;
             z-index: 2;
             overflow-y: auto;
-            /* Убираем стандартный скроллбар для стиля */
             scrollbar-width: none; 
         }
         .text-area::-webkit-scrollbar { display: none; }
@@ -120,6 +118,39 @@
             pointer-events: none;
             z-index: 3;
             opacity: 0.6;
+        }
+
+        /* Стили для списка вакансий (в столбик) */
+        .vacancy-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .vacancy-item {
+            background: #0f0f0f;
+            border-left: 3px solid #ff0033;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #fff;
+            text-align: left;
+            box-sizing: border-box;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        .vacancy-item strong {
+            color: #ff0033;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 4px;
+            border-bottom: 1px dashed #333;
+            padding-bottom: 2px;
+        }
+        .vacancy-item span {
+            font-size: 12px;
+            color: #aaa;
         }
 
         .btn {
@@ -202,7 +233,6 @@
         <!-- ЭКРАН 3: Кто такие ELITE -->
         <div id="text-menu" class="menu-box hidden">
             <div class="section-title">[ ИНФОРМАЦИЯ: КТО ТАКИЕ ELITE ]</div>
-            <!-- data-text содержит текст для анимации -->
             <div class="text-area" data-text="ELITE - Гвардия отдела Metro Police Forces и Overwatch Transhuman Arms, одно из подразделений, созданное Генеральным Штабом Сити-17. В данное подразделение входят строго лучшие юниты из рядов всех Гарнизонов ГО и OTA. Подразделение имеет дополнительные корпуса: Корпус юстиции и Корпус Командования. Подразделение занимается строгим надзором за соблюдением устава среди остальных юнитов ГО, а в случае нарушения — его пресечением и вынесением приговора. Для остальных юнитов ГО они являются строгим образцом и фигурой ГО, на которую стоит ровняться."></div>
             <button id="btn-back-who" class="btn">НАЗАД</button>
         </div>
@@ -217,10 +247,28 @@
             <button id="btn-back-rules" class="btn">НАЗАД</button>
         </div>
 
-        <!-- ЭКРАН 5: Вакансии -->
+        <!-- ЭКРАН 5: Вакансии (ОБНОВЛЕНО) -->
         <div id="jobs-menu" class="menu-box hidden">
             <div class="section-title">[ ДОСТУПНЫЕ ВАКАНСИИ ]</div>
-            <div class="text-area" data-text="1. C17.MPF.ELITE.JURY.OFC - Юнит Гражданской Обороны MPF под названием Элит либо ELITE. Занимается слежкой за соблюдением устава сотрудников Г.О. Также следят за порядком и дисциплиной, выявляют дефекты и отклонения. 2. C17.MPF.ELITE.CMD.OFC - Офицер командования ELITE, координирует действия групп и принимает решения в критических ситуациях."></div>
+            
+            <!-- Вместо простого текста теперь используем список -->
+            <div class="text-area">
+                <ul class="vacancy-list">
+                    <li class="vacancy-item">
+                        <strong>C17.MPF.ELITE.JURY.OFC</strong>
+                        <span>Юнит Гражданской Обороны MPF (Элит/ELITE). Слежка за соблюдением устава сотрудников Г.О., поддержание порядка и дисциплины, выявление дефектов и отклонений.</span>
+                    </li>
+                    <li class="vacancy-item">
+                        <strong>C17.MPF.ELITE.CMD.OFC</strong>
+                        <span>Офицер командования ELITE. Координация действий групп и принятие решений в критических ситуациях.</span>
+                    </li>
+                    <li class="vacancy-item">
+                        <strong>C17.OTA.ELITE.LEGION</strong>
+                        <span>Экспериментальные единицы ОТА, используемые для защиты и остановки нападков на город, а также защиты приоритетных лиц.</span>
+                    </li>
+                </ul>
+            </div>
+            
             <button id="btn-back-jobs" class="btn">НАЗАД</button>
         </div>
     </div>
@@ -262,7 +310,7 @@
                 if (!text) return;
 
                 let i = 0;
-                const speed = 25; // Чуть медленнее для драматизма
+                const speed = 25;
 
                 function type() {
                     if (i < text.length) {
@@ -288,32 +336,19 @@
                 }, 1500);
             });
 
-            // Функция переключения экранов с гарантированным запуском текста
-            function showScreenAndType(targetScreen, sourceTextElement) {
-                // Сначала скрываем все экраны
+            function showScreenAndType(targetScreen) {
                 [textMenu, rulesMenu, jobsMenu, buttonsMenu].forEach(el => el.classList.add('hidden'));
-                
-                // Показываем целевой
                 targetScreen.classList.remove('hidden');
                 
-                // Находим текстовый блок внутри целевого экрана
                 const textBlock = targetScreen.querySelector('.text-area');
-                if (textBlock) {
+                if (textBlock && textBlock.hasAttribute('data-text')) {
                     typeWriter(textBlock);
                 }
             }
 
-            btnWho.addEventListener('click', () => {
-                showScreenAndType(textMenu);
-            });
-
-            btnRules.addEventListener('click', () => {
-                showScreenAndType(rulesMenu);
-            });
-
-            btnJobs.addEventListener('click', () => {
-                showScreenAndType(jobsMenu);
-            });
+            btnWho.addEventListener('click', () => showScreenAndType(textMenu));
+            btnRules.addEventListener('click', () => showScreenAndType(rulesMenu));
+            btnJobs.addEventListener('click', () => showScreenAndType(jobsMenu));
 
             btnBackWho.addEventListener('click', () => {
                 stopTyping();
