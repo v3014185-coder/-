@@ -15,7 +15,7 @@
         body {
             background-color: var(--bg-black);
             color: var(--text-white);
-            font-family: 'Courier New', Courier, monospace; /* Строгий шрифт терминала */
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -88,6 +88,7 @@
             text-align: center;
         }
 
+        /* --- КНОПКИ --- */
         .btn {
             background: transparent;
             color: var(--primary-red);
@@ -117,8 +118,29 @@
             border-color: #0f0;
         }
 
-        /* --- СТИЛИ МЕНЮ (КАК НА СКРИНЕ) --- */
+        /* --- ГЛАВНОЕ МЕНЮ --- */
         .menu-title {
+            color: var(--primary-red);
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* --- ЭКРАН ВАКАНСИЙ --- */
+        .jobs-title {
             color: var(--primary-red);
             font-size: 18px;
             text-transform: uppercase;
@@ -161,9 +183,74 @@
             gap: 10px;
         }
 
-        .btn-full {
+        /* --- МОДАЛЬНОЕ ОКНО (ЗАЯВКА) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            margin-bottom: 0;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #050505;
+            border: 2px solid var(--border-color);
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            color: white;
+            text-align: center;
+        }
+
+        .modal-title {
+            color: var(--primary-red);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            color: #aaa;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        .modal-btn {
+            background: transparent;
+            color: var(--primary-red);
+            border: 2px solid var(--primary-red);
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-right: 10px;
+        }
+
+        .modal-btn.submit {
+            background: var(--primary-red);
+            color: black;
         }
 
         /* --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА --- */
@@ -196,28 +283,61 @@
         <button id="activateBtn" class="btn" disabled>АКТИВИРОВАТЬ ДОСТУП</button>
     </div>
 
-    <!-- ЭКРАН ВАКАНСИЙ (ТОТ САМЫЙ С СКРИНА) -->
+    <!-- ГЛАВНОЕ МЕНЮ (НОВЫЙ ЭКРАН) -->
+    <div id="screen-main" class="screen">
+        <div class="menu-title">[ ГЛАВНОЕ МЕНЮ ]</div>
+        <div class="menu-grid">
+            <button id="btn-who" class="btn">КТО ТАКИЕ ELITE?</button>
+            <button id="btn-rules" class="btn">УСТАВ</button>
+        </div>
+        <button id="btn-jobs" class="btn">ВАКАНСИИ</button>
+    </div>
+
+    <!-- ЭКРАН ВАКАНСИЙ -->
     <div id="screen-jobs" class="screen">
-        <div class="menu-title">[ ВАКАНСИИ ]</div>
+        <div class="jobs-title">[ ВАКАНСИИ ]</div>
         
-        <!-- Карточка 1 -->
         <div class="job-card">
             <span class="job-code">C17.MPF.ELITE.JURY.OFC</span>
             <span class="job-desc">Юнит Гражданской Обороны. Слежка за соблюдением устава.</span>
         </div>
 
-        <!-- Карточка 2 -->
         <div class="job-card">
             <span class="job-code">C17.OTA.ELITE.LEGION</span>
             <span class="job-desc">Экспериментальные единицы ОТА. Высокий уровень угрозы.</span>
         </div>
 
         <div class="action-buttons">
-            <button id="btn-apply" class="btn btn-full">ПОДАТЬ ЗАЯВКУ</button>
-            <button id="btn-back" class="btn btn-full">НАЗАД В МЕНЮ</button>
+            <button id="btn-apply-modal" class="btn">ПОДАТЬ ЗАЯВКУ</button>
+            <button id="btn-back-to-main" class="btn">НАЗАД В МЕНЮ</button>
         </div>
     </div>
 
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ЗАЯВКИ -->
+<div id="applyModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-title">[ ПОДАЧА ЗАЯВКИ ]</div>
+        <form id="applicationForm">
+            <div class="form-group">
+                <label class="form-label">КОД ВАКАНСИИ (автозаполнение)</label>
+                <input type="text" id="jobCodeInput" class="form-input" readonly value="">
+            </div>
+            <div class="form-group">
+                <label class="form-label">ВАШ ID ИЛИ НИКНЕЙМ</label>
+                <input type="text" id="userNickInput" class="form-input" placeholder="Например: #12345 или PlayerName" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">ПРИЧИНА ПОДАЧИ</label>
+                <input type="text" id="reasonInput" class="form-input" placeholder="Почему вы хотите вступить?" required>
+            </div>
+            <div style="margin-top: 20px;">
+                <button type="submit" class="modal-btn submit">ОТПРАВИТЬ ДАННЫЕ</button>
+                <button type="button" id="closeModalBtn" class="modal-btn">ЗАКРЫТЬ</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -228,10 +348,19 @@
     const activateBtn = document.getElementById('activateBtn');
 
     const screenLoad = document.getElementById('screen-load');
+    const screenMain = document.getElementById('screen-main');
     const screenJobs = document.getElementById('screen-jobs');
     
-    const btnApply = document.getElementById('btn-apply');
-    const btnBack = document.getElementById('btn-back');
+    const btnWho = document.getElementById('btn-who');
+    const btnRules = document.getElementById('btn-rules');
+    const btnJobs = document.getElementById('btn-jobs');
+    const btnBackMain = document.getElementById('btn-back-to-main');
+    const btnApplyModal = document.getElementById('btn-apply-modal');
+
+    const modal = document.getElementById('applyModal');
+    const jobCodeInput = document.getElementById('jobCodeInput');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const applicationForm = document.getElementById('applicationForm');
 
     // --- ЛОГИКА ЗАГРУЗКИ ---
     function startLoading() {
@@ -261,32 +390,83 @@
             accessStatus.textContent = 'Загрузка интерфейса…';
             activateBtn.textContent = 'ДОСТУП АКТИВИРОВАН';
             
-            // ПАУЗА 4 СЕКУНДЫ ПЕРЕД ПОЯВЛЕНИЕМ МЕНЮ
+            // ПАУЗА 4 СЕКУНДЫ ПЕРЕД ПОЯВЛЕНИЕМ ГЛАВНОГО МЕНЮ
             setTimeout(() => {
                 screenLoad.classList.remove('active');
-                screenJobs.classList.add('active');
-                
-                // ЗАПУСКАЕМ ЭФФЕКТ ПЕЧАТИ ТЕКСТА
-                typeWriterEffect();
+                screenMain.classList.add('active');
             }, 4000);
         }, 1500);
+    });
+
+    // --- ПЕРЕХОДЫ МЕЖДУ ЭКРАНАМИ ---
+    
+    // Кнопки главного меню (заглушки)
+    btnWho.addEventListener('click', () => alert('Информация о подразделении Elite Legion. История создания, цели и задачи.'));
+    btnRules.addEventListener('click', () => alert('Текст устава Elite Legion. Правила поведения, субординация, дисциплинарные взыскания.'));
+    
+    // Переход в вакансии
+    btnJobs.addEventListener('click', () => {
+        screenMain.classList.remove('active');
+        screenJobs.classList.add('active');
+        
+        // Запускаем эффект печати текста только при входе на экран вакансий
+        typeWriterEffect();
+    });
+
+    // Возврат в главное меню
+    btnBackMain.addEventListener('click', () => {
+        screenJobs.classList.remove('active');
+        screenMain.classList.add('active');
+    });
+
+    // --- МОДАЛЬНОЕ ОКНО И ЗАЯВКА ---
+    
+    // Открытие формы
+    btnApplyModal.addEventListener('click', () => {
+        // Пытаемся взять код вакансии из первой карточки, если пусто - ставим заглушку
+        const firstCardCode = document.querySelector('.job-code')?.textContent || 'UNKNOWN-VACANCY';
+        jobCodeInput.value = firstCardCode;
+        modal.style.display = 'flex';
+    });
+
+    // Закрытие формы
+    closeModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    // Отправка формы
+    applicationForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nick = document.getElementById('userNickInput').value;
+        const reason = document.getElementById('reasonInput').value;
+        const code = jobCodeInput.value;
+
+        alert(`Заявка принята!\n\nКод вакансии: ${code}\nНикнейм: ${nick}\nПричина: \${reason}\n\nОжидайте ответа от командования.`);
+        modal.style.display = 'none';
+        applicationForm.reset();
     });
 
     // --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА (TYPEWRITER) ---
     function typeWriterEffect() {
         const cards = document.querySelectorAll('.job-card');
         
+        // Очищаем текст перед анимацией, чтобы он появился заново
+        cards.forEach(card => {
+            card.querySelector('.job-code').textContent = '';
+            card.querySelector('.job-desc').textContent = '';
+        });
+
         cards.forEach((card, index) => {
             const code = card.querySelector('.job-code');
             const desc = card.querySelector('.job-desc');
             
-            const codeText = code.textContent;
-            const descText = desc.textContent;
-            
-            code.textContent = '';
-            desc.textContent = '';
-            
-            // Печатаем код
+            const codeText = card.getAttribute('data-code') || code.textContent; // Берем из data-атрибута или текста
+            const descText = card.getAttribute('data-desc') || desc.textContent;
+
+            // Сохраняем оригинальные тексты в атрибуты, чтобы анимация работала корректно при повторном входе
+            if (!card.getAttribute('data-code')) card.setAttribute('data-code', codeText);
+            if (!card.getAttribute('data-desc')) card.setAttribute('data-desc', descText);
+
             let i = 0;
             const printCode = setInterval(() => {
                 if (i < codeText.length) {
@@ -294,7 +474,6 @@
                     i++;
                 } else {
                     clearInterval(printCode);
-                    // Печатаем описание с небольшой задержкой
                     let j = 0;
                     const printDesc = setInterval(() => {
                         if (j < descText.length) {
@@ -303,21 +482,11 @@
                         } else {
                             clearInterval(printDesc);
                         }
-                    }, 30); // Скорость печати описания
+                    }, 30);
                 }
-            }, 50); // Скорость печати кода
+            }, 50);
         });
     }
-
-    // --- ОБРАБОТЧИКИ КНОПОК ---
-    btnApply.addEventListener('click', () => {
-        alert('Заявка отправлена в штаб. Ожидайте ответа.');
-    });
-
-    btnBack.addEventListener('click', () => {
-        // Здесь можно добавить логику возврата в главное меню, если оно будет
-        alert('Возврат в главное меню...');
-    });
 
     // Старт
     startLoading();
