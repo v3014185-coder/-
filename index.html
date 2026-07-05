@@ -321,3 +321,161 @@
             <div class="section-title">[ ИНФОРМАЦИЯ: УСТАВ ]</div>
             <div class="text-area" data-text="Устав — это свод правил, который задаёт порядок работы и поведения в какой‑либо организации или структуре. В Уставе есть 8 пунктов. Он регламентирует все аспекты деятельности подразделения, включая субординацию, применение силы и порядок взаимодействия с гражданскими лицами."></div>
             <div style="margin-bottom: 15px; text-align: left;">
+                <a href="#" target="_blank" style="color: #ff0033; text-decoration: none; border-bottom: 1px dashed #ff0033;">ОТКРЫТЬ УСТАВ (MOCK)</a>
+            </div>
+            <button id="btn-back-rules" class="btn">НАЗАД</button>
+        </div>
+
+        <!-- ЭКРАН 5: Вакансии -->
+        <div id="jobs-menu" class="menu-box hidden">
+            <div class="section-title">[ ДОСТУПНЫЕ ВАКАНСИИ ]</div>
+            <div class="text-area">
+                <ul class="vacancy-list">
+                    <li class="vacancy-item">
+                        <strong>C17.MPF.ELITE.JURY.OFC</strong>
+                        <span>Юнит Гражданской Обороны MPF (Элит/ELITE). Слежка за соблюдением устава сотрудников Г.О., поддержание порядка и дисциплины.</span>
+                        <div class="risk-indicator"><div class="risk-fill" style="height: 40%;"></div></div>
+                    </li>
+                    <li class="vacancy-item">
+                        <strong>C17.MPF.ELITE.CMD.OFC</strong>
+                        <span>Офицер командования ELITE. Координация действий групп и принятие решений в критических ситуациях.</span>
+                        <div class="risk-indicator"><div class="risk-fill" style="height: 60%;"></div></div>
+                    </li>
+                    <li class="vacancy-item">
+                        <strong>C17.OTA.ELITE.LEGION</strong>
+                        <span>Экспериментальные единицы ОТА, используемые для защиты города и приоритетных лиц. Высокий уровень угрозы.</span>
+                        <div class="risk-indicator"><div class="risk-fill" style="height: 90%;"></div></div>
+                    </li>
+                </ul>
+            </div>
+            <button id="btn-apply-global" class="btn" style="background: #ff0033; color: #000;">ПОДАТЬ ЗАЯВКУ НА ВАКАНСИЮ</button>
+            <button id="btn-back-jobs" class="btn">НАЗАД</button>
+        </div>
+    </div>
+
+    <!-- Системный Лог -->
+    <div class="system-log-container">
+        <div class="log-header">[ SYSTEM LOG ]</div>
+        <div class="log-content" id="system-log">
+            <!-- Логи будут добавляться сюда -->
+        </div>
+    </div>
+
+    <!-- Модальное окно заявки -->
+    <div class="modal-overlay" id="apply-modal">
+        <div class="modal-content">
+            <h3 style="color: var(--primary-red); margin-bottom: 20px;">ФОРМА ЗАЯВКИ</h3>
+            <div class="form-group">
+                <label>ID ЮНИТА / ПСЕВДОНИМ</label>
+                <input type="text" placeholder="Введите ID или позывной">
+            </div>
+            <div class="form-group">
+                <label>ПРИЧИНА ПОДАЧИ</label>
+                <input type="text" placeholder="Кратко: почему вы подходите">
+            </div>
+            <div class="form-group">
+                <label>ТЕКУЩИЙ СТАТУС</label>
+                <input type="text" placeholder="Гражданский / Рекрут / ...">
+            </div>
+            <button id="submit-app" class="btn" style="width: auto; padding: 10px 20px;">ОТПРАВИТЬ</button>
+            <div class="submit-loader" id="submit-loader">Отправка данных…</div>
+        </div>
+    </div>
+
+    <script>
+        // --- Утилиты ---
+        function log(msg) {
+            const logContainer = document.getElementById('system-log');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logContainer.prepend(entry);
+            if (logContainer.children.length > 20) {
+                logContainer.lastChild.remove();
+            }
+        }
+
+        function triggerGlitch() {
+            const glitch = document.getElementById('glitch-layer');
+            glitch.classList.add('glitch-active');
+            setTimeout(() => glitch.classList.remove('glitch-active'), 350);
+        }
+
+        // --- Логика экранов ---
+        function showScreen(id) {
+            document.querySelectorAll('.menu-box').forEach(el => el.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+            triggerGlitch();
+        }
+
+        // --- Инициализация ---
+        document.addEventListener('DOMContentLoaded', () => {
+            log('Система инициализируется…');
+            
+            const progressFill = document.getElementById('progress-fill');
+            const statusText = document.getElementById('status-text');
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    progressFill.style.width = '100%';
+                    statusText.textContent = '[ ДОСТУП: РАЗРЕШЁН ]';
+                    log('Авторизация успешна. Доступ разрешён.');
+                    triggerGlitch();
+                } else {
+                    progressFill.style.width = `\${progress}%`;
+                    statusText.textContent = `[ ДОСТУП: ОГРАНИЧЕН (\${Math.floor(progress)}%) ]`;
+                }
+            }, 300);
+
+            // Кнопка активации
+            document.getElementById('activate-btn').addEventListener('click', () => {
+                if (progress < 100) {
+                    log('Ошибка: Авторизация не завершена. Продолжаю загрузку…');
+                    return;
+                }
+                log('Доступ активирован. Переход в главное меню…');
+                showScreen('buttons-menu');
+            });
+
+            // Навигация по меню
+            document.getElementById('btn-who').addEventListener('click', () => {
+                const textArea = document.querySelector('#text-menu .text-area');
+                textArea.textContent = textArea.getAttribute('data-text');
+                showScreen('text-menu');
+            });
+            document.getElementById('btn-rules').addEventListener('click', () => {
+                const textArea = document.querySelector('#rules-menu .text-area');
+                textArea.textContent = textArea.getAttribute('data-text');
+                showScreen('rules-menu');
+            });
+            document.getElementById('btn-jobs').addEventListener('click', () => {
+                showScreen('jobs-menu');
+            });
+
+            // Кнопки «Назад»
+            document.getElementById('btn-back-who').addEventListener('click', () => showScreen('buttons-menu'));
+            document.getElementById('btn-back-rules').addEventListener('click', () => showScreen('buttons-menu'));
+            document.getElementById('btn-back-jobs').addEventListener('click', () => showScreen('buttons-menu'));
+
+            // Заявка
+            document.getElementById('btn-apply-global').addEventListener('click', () => {
+                document.getElementById('apply-modal').classList.add('active');
+                log('Открыта форма заявки.');
+            });
+            document.getElementById('submit-app').addEventListener('click', () => {
+                const loader = document.getElementById('submit-loader');
+                loader.style.display = 'block';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    document.getElementById('apply-modal').classList.remove('active');
+                    log('Заявка отправлена. Ожидание ответа…');
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
