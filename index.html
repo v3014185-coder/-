@@ -8,9 +8,10 @@
         :root {
             --primary-red: #ff0033;
             --bg-black: #000000;
-            --panel-dark: #050505;
+            --panel-dark: #0a0a0a;
             --text-white: #ffffff;
             --border-color: #333333;
+            --card-bg: #000;
         }
 
         body {
@@ -26,12 +27,63 @@
             user-select: none;
         }
 
+        /* --- ЭКРАН ЗАГРУЗКИ (ХАКЕРСКИЙ СТИЛЬ) --- */
+        #boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-red);
+            text-align: center;
+        }
+
+        .boot-log {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .boot-status {
+            font-size: 14px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .matrix-char {
+            position: absolute;
+            color: var(--primary-red);
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 0, 51, 0.5);
+        }
+
+        /* --- ОСНОВНОЙ ИНТЕРФЕЙС --- */
         .screen-container {
             width: 100%;
             max-width: 600px;
             min-height: 500px;
             background-color: var(--panel-dark);
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-color);
             position: relative;
             display: flex;
             flex-direction: column;
@@ -39,6 +91,8 @@
             align-items: center;
             box-sizing: border-box;
             padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            z-index: 10;
         }
 
         /* --- Общие стили экранов --- */
@@ -57,75 +111,37 @@
             transform: translateY(0);
         }
 
-        /* --- Экран загрузки --- */
-        .status-text {
-            color: var(--primary-red);
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-
-        .progress-bar-bg {
-            width: 100%;
-            height: 8px;
-            background: #000;
-            border: 1px solid var(--border-color);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: var(--primary-red);
-            transition: width 2s ease-out;
-        }
-
-        .access-status {
-            color: #555;
-            font-size: 12px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
         /* --- Кнопки --- */
         .btn {
             background: transparent;
             color: var(--primary-red);
-            border: 2px solid var(--border-color);
-            padding: 15px 30px;
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             width: 100%;
             transition: all 0.2s;
-            box-shadow: 0 0 10px rgba(255, 0, 51, 0.3);
             margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover {
             background: var(--primary-red);
             color: #000;
-            border-color: var(--primary-red);
-            box-shadow: 0 0 20px rgba(255, 0, 51, 0.8);
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.6);
         }
 
-        .btn-green {
-            background: #0f0;
-            color: #000;
-            border-color: #0f0;
-        }
-
-        /* --- Главное меню --- */
+        /* --- Меню --- */
         .menu-title {
             color: var(--primary-red);
             font-size: 18px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
@@ -136,41 +152,17 @@
         .menu-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 10px;
             width: 100%;
             margin-bottom: 20px;
         }
 
-        /* --- Блок для вывода текста (вместо Alert) --- */
-        .info-output {
-            width: 100%;
-            background: #000;
-            border: 1px solid var(--border-color);
-            color: var(--primary-red);
-            padding: 20px;
-            margin-top: 20px;
-            text-align: left;
-            font-size: 14px;
-            line-height: 1.6;
-            display: none; /* Скрыт по умолчанию */
-            animation: fadeIn 0.5s;
-        }
-
-        .info-output.visible {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Экран вакансий --- */
+        /* --- Карточки вакансий (Те самые кубы) --- */
         .jobs-title {
             color: var(--primary-red);
             font-size: 18px;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
@@ -179,53 +171,61 @@
         }
 
         .job-card {
-            background: #000;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--primary-red);
             width: 100%;
             text-align: left;
-            padding: 15px;
+            padding: 20px;
             margin-bottom: 15px;
             box-sizing: border-box;
+            min-height: 80px; /* Фиксированная высота куба */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .job-code {
+            font-family: 'Courier New', monospace;
             font-weight: bold;
             font-size: 14px;
-            margin-bottom: 5px;
-            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-red);
+            letter-spacing: 1px;
+            /* Сюда будет печататься текст */
         }
 
         .job-desc {
             font-size: 12px;
-            color: #aaa;
+            color: #888;
             line-height: 1.4;
+            /* Сюда будет печататься текст */
         }
 
         .action-buttons {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
-        /* --- Модальное окно (Заявка) --- */
+        /* --- Модальное окно --- */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
         }
 
         .modal-content {
-            background: #050505;
-            border: 2px solid var(--border-color);
+            background: #000;
+            border: 1px solid var(--border-color);
             padding: 30px;
             width: 90%;
             max-width: 400px;
@@ -233,288 +233,277 @@
             text-align: center;
         }
 
-        .modal-title {
-            color: var(--primary-red);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-label {
-            display: block;
-            color: #aaa;
-            font-size: 12px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .form-input {
-            width: 100%;
-            background: #000;
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 10px;
-            box-sizing: border-box;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-label { display: block; color: #555; font-size: 11px; margin-bottom: 5px; text-transform: uppercase; }
+        .form-input { width: 100%; background: #111; border: 1px solid var(--border-color); color: white; padding: 10px; box-sizing: border-box; font-family: monospace; }
+        
         .modal-btn {
             background: transparent;
             color: var(--primary-red);
-            border: 2px solid var(--border-color);
+            border: 1px solid var(--border-color);
             padding: 10px 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-family: monospace;
             cursor: pointer;
             text-transform: uppercase;
+            margin-right: 10px;
         }
+        .modal-btn.submit { background: var(--primary-red); color: black; border-color: var(--primary-red); }
 
-        .modal-btn.submit {
-            background: var(--primary-red);
-            color: black;
-            border-color: var(--primary-red);
-        }
-
-        /* --- Эффект печатной машинки --- */
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: var(--primary-red); }
-        }
     </style>
 </head>
 <body>
 
+<!-- ФОН С БЕГУЩИМИ ЦИФРАМИ (ЭФФЕКТ ЗАГРУЗКИ) -->
+<div class="matrix-bg" id="matrix"></div>
+
+<!-- ЭКРАН ЗАГРУЗКИ СИСТЕМЫ -->
+<div id="boot-screen">
+    <div class="boot-log">INITIALIZING CORE...</div>
+    <div class="boot-log">LOADING PROTOCOLS...</div>
+    <div class="boot-log">CONNECTING TO SERVER...</div>
+    <div class="boot-status" id="bootStatus">[ СИСТЕМА ЗАГРУЖАЕТСЯ ]</div>
+    <div style="margin-top: 20px; font-size: 10px; color: #444;">ACCESS GRANTED IN 3...</div>
+</div>
+
+<!-- ОСНОВНОЙ КОНТЕЙНЕР -->
 <div class="screen-container">
     
-    <!-- ЭКРАН ЗАГРУЗКИ -->
-    <div id="screen-load" class="screen active">
-        <div class="status-text" id="statusText">[ СИСТЕМА ЗАГРУЖАЕТСЯ ]</div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progressFill"></div>
-        </div>
-        <div class="access-status" id="accessStatus">Ожидание авторизации…</div>
-        <button id="activateBtn" class="btn" disabled>АКТИВИРОВАТЬ ДОСТУП</button>
-    </div>
-
-    <!-- ГЛАВНОЕ МЕНЮ -->
+    <!-- ЭКРАН ГЛАВНОГО МЕНЮ -->
     <div id="screen-main" class="screen">
         <div class="menu-title">[ ГЛАВНОЕ МЕНЮ ]</div>
         <div class="menu-grid">
-            <button id="btn-who" class="btn">КТО ТАКИЕ ELITE?</button>
-            <button id="btn-rules" class="btn">УСТАВ</button>
+            <button class="btn" onclick="showInfo('elite')">КТО ТАКИЕ ELITE?</button>
+            <button class="btn" onclick="showInfo('rules')">УСТАВ</button>
         </div>
-        <button id="btn-jobs" class="btn">ВАКАНСИИ</button>
+        <button class="btn" style="grid-column: 1 / -1;" onclick="goToJobs()">ВАКАНСИИ</button>
         
         <!-- Блок для вывода текста вместо Alert -->
-        <div id="infoOutput" class="info-output"></div>
+        <div id="infoOutput" style="margin-top: 20px; padding: 15px; background: #000; border: 1px solid #333; color: var(--primary-red); display: none; text-align: left;"></div>
     </div>
 
     <!-- ЭКРАН ВАКАНСИЙ -->
     <div id="screen-jobs" class="screen">
         <div class="jobs-title">[ ВАКАНСИИ ]</div>
         
+        <!-- КАРТОЧКА 1 (Пустой куб -> Заполненный) -->
         <div class="job-card">
-            <span class="job-code">C17.MPF.ELITE.JURY.OFC</span>
-            <span class="job-desc">Юнит Гражданской Обороны. Слежка за соблюдением устава.</span>
+            <span class="job-code" id="code1"></span>
+            <span class="job-desc" id="desc1"></span>
         </div>
 
+        <!-- КАРТОЧКА 2 (Пустой куб -> Заполненный) -->
         <div class="job-card">
-            <span class="job-code">C17.OTA.ELITE.LEGION</span>
-            <span class="job-desc">Экспериментальные единицы ОТА. Высокий уровень угрозы.</span>
+            <span class="job-code" id="code2"></span>
+            <span class="job-desc" id="desc2"></span>
         </div>
 
         <div class="action-buttons">
-            <button id="btn-apply-modal" class="btn">ПОДАТЬ ЗАЯВКУ</button>
-            <button id="btn-back-to-main" class="btn">НАЗАД В МЕНЮ</button>
+            <button class="btn" onclick="openModal()">ПОДАТЬ ЗАЯВКУ</button>
+            <button class="btn" onclick="goToMain()">НАЗАД В МЕНЮ</button>
         </div>
     </div>
 
 </div>
 
-<!-- МОДАЛЬНОЕ ОКНО ЗАЯВКИ -->
+<!-- МОДАЛЬНОЕ ОКНО -->
 <div id="applyModal" class="modal-overlay">
     <div class="modal-content">
-        <div class="modal-title">[ ПОДАЧА ЗАЯВКИ ]</div>
-        <form id="applicationForm">
+        <div style="color:var(--primary-red); margin-bottom: 15px; text-transform: uppercase;">[ ПОДАЧА ЗАЯВКИ ]</div>
+        <form onsubmit="submitForm(event)">
             <div class="form-group">
                 <label class="form-label">КОД ВАКАНСИИ</label>
-                <input type="text" id="jobCodeInput" class="form-input" readonly value="LOADING...">
+                <input type="text" id="modalCode" class="form-input" readonly value="LOADING...">
             </div>
             <div class="form-group">
                 <label class="form-label">ВАШ ID ИЛИ НИКНЕЙМ</label>
-                <input type="text" id="userNickInput" class="form-input" placeholder="Например: #12345 или PlayerName" required>
+                <input type="text" id="modalNick" class="form-input" placeholder="Например: #12345" required>
             </div>
             <div class="form-group">
                 <label class="form-label">ПРИЧИНА ПОДАЧИ</label>
-                <input type="text" id="reasonInput" class="form-input" placeholder="Почему вы хотите вступить?" required>
+                <input type="text" id="modalReason" class="form-input" placeholder="Почему вы хотите вступить?" required>
             </div>
-            <div style="margin-top: 20px; text-align: center;">
-                <button type="submit" class="modal-btn submit">ОТПРАВИТЬ ДАННЫЕ</button>
-                <button type="button" id="closeModalBtn" class="modal-btn">ЗАКРЫТЬ</button>
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                <button type="submit" class="modal-btn submit">ОТПРАВИТЬ</button>
+                <button type="button" class="modal-btn" onclick="closeModal()">ЗАКРЫТЬ</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // --- Элементы ---
-    const statusText = document.getElementById('statusText');
-    const progressFill = document.getElementById('progressFill');
-    const accessStatus = document.getElementById('accessStatus');
-    const activateBtn = document.getElementById('activateBtn');
+    // --- ДАННЫЕ ДЛЯ КАРТОЧЕК (Твои коды) ---
+    const jobsData = [
+        {
+            code: "C17.MPF.ELITE.JURY.OFC",
+            desc: "Юнит Гражданской Обороны. Слежка за соблюдением устава. Требуется высокая дисциплина."
+        },
+        {
+            code: "C17.OTA.ELITE.LEGION",
+            desc: "Экспериментальные единицы ОТА. Высокий уровень угрозы. Только для опытных бойцов."
+        }
+    ];
 
-    const screenLoad = document.getElementById('screen-load');
-    const screenMain = document.getElementById('screen-main');
-    const screenJobs = document.getElementById('screen-jobs');
-    const infoOutput = document.getElementById('infoOutput');
-    
-    const btnWho = document.getElementById('btn-who');
-    const btnRules = document.getElementById('btn-rules');
-    const btnJobs = document.getElementById('btn-jobs');
-    const btnBackMain = document.getElementById('btn-back-to-main');
-    const btnApplyModal = document.getElementById('btn-apply-modal');
+    // --- ИНИЦИАЛИЗАЦИЯ МАТРИЦЫ (БЕГУЩИЕ ЦИФРЫ) ---
+    const matrix = document.getElementById('matrix');
+    const chars = '0123456789ABCDEF';
+    const fontSize = 16;
+    const gap = 20;
 
-    const modal = document.getElementById('applyModal');
-    const jobCodeInput = document.getElementById('jobCodeInput');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const applicationForm = document.getElementById('applicationForm');
-
-    // --- ЛОГИКА ЗАГРУЗКИ ---
-    function startLoading() {
-        let width = 0;
-        const interval = setInterval(() => {
-            width += Math.random() * 10;
-            if (width > 100) width = 100;
-            progressFill.style.width = width + '%';
+    function createMatrix() {
+        const rows = Math.ceil(window.innerHeight / gap);
+        const cols = Math.ceil(window.innerWidth / gap);
+        
+        for (let i = 0; i < cols; i++) {
+            const col = document.createElement('div');
+            col.style.position = 'absolute';
+            col.style.left = (i * gap) + 'px';
             
-            if (width >= 100) {
-                clearInterval(interval);
-                statusText.textContent = '[ СИСТЕМА ГОТОВА ]';
-                accessStatus.textContent = 'Доступ разрешён. Нажмите кнопку для входа.';
-                activateBtn.disabled = false;
+            let y = 0;
+            for (let j = 0; j < rows; j++) {
+                const char = document.createElement('div');
+                char.className = 'matrix-char';
+                char.innerText = chars[Math.floor(Math.random() * chars.length)];
+                char.style.top = (y * gap) + 'px';
+                char.style.opacity = Math.random() * 0.5 + 0.3;
+                char.style.transition = 'top 0.1s linear';
+                col.appendChild(char);
+                y += Math.floor(Math.random() * 3) + 1; // Разная скорость падения
             }
-        }, 100);
+            matrix.appendChild(col);
+        }
     }
 
-    // --- ЛОГИКА АКТИВАЦИИ ---
-    activateBtn.addEventListener('click', () => {
-        activateBtn.disabled = true;
-        activateBtn.textContent = 'ПРОВЕРКА ДОСТУПА…';
-        activateBtn.classList.add('btn-green');
-        
-        setTimeout(() => {
-            statusText.textContent = '[ ДОСТУП РАЗРЕШЁН ]';
-            accessStatus.textContent = 'Загрузка интерфейса…';
-            activateBtn.textContent = 'ДОСТУП АКТИВИРОВАН';
-            
-            setTimeout(() => {
-                screenLoad.classList.remove('active');
-                screenMain.classList.add('active');
-            }, 4000);
-        }, 1500);
-    });
-
-    // --- ПЕРЕХОДЫ МЕЖДУ ЭКРАНАМИ ---
-    
-    // Кнопки главного меню (теперь выводят текст в блок, а не Alert)
-    btnWho.addEventListener('click', () => {
-        infoOutput.innerHTML = '<span style="color:var(--primary-red)">[ ELITE LEGION ]</span><br><br>Подразделение Elite Legion — это элитные силы специального назначения. Созданы для выполнения задач повышенной сложности, где обычные подразделения бессильны. Их девиз: "Мы там, где другие не пройдут".<br><br>Доступ к информации о составе подразделения ограничен.';
-        infoOutput.classList.add('visible');
-    });
-
-    btnRules.addEventListener('click', () => {
-        infoOutput.innerHTML = '<span style="color:var(--primary-red)">[ УСТАВ ELITE LEGION ]</span><br><br>1. Приказ старшего по званию — закон.<br>2. Не разглашать секретные данные.<br>3. Соблюдать субординацию.<br>4. Быть готовым к немедленному выполнению задачи.<br><br>Нарушение устава влечет за собой дисциплинарное взыскание.';
-        infoOutput.classList.add('visible');
-    });
-    
-    // Переход в вакансии
-    btnJobs.addEventListener('click', () => {
-        infoOutput.classList.remove('visible'); // Убираем текст при переходе
-        screenMain.classList.remove('active');
-        screenJobs.classList.add('active');
-        typeWriterEffect();
-    });
-
-    // Возврат в главное меню
-    btnBackMain.addEventListener('click', () => {
-        screenJobs.classList.remove('active');
-        screenMain.classList.add('active');
-        infoOutput.classList.remove('visible'); // Скрываем текст
-    });
-
-    // --- МОДАЛЬНОЕ ОКНО И ЗАЯВКА ---
-    
-    btnApplyModal.addEventListener('click', () => {
-        const firstCardCode = document.querySelector('.job-code')?.textContent || 'UNKNOWN-VACANCY';
-        jobCodeInput.value = firstCardCode;
-        modal.style.display = 'flex';
-    });
-
-    closeModalBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    applicationForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const nick = document.getElementById('userNickInput').value;
-        const reason = document.getElementById('reasonInput').value;
-        const code = jobCodeInput.value;
-
-        // Вместо alert теперь просто закрываем окно и можно добавить сообщение на экран
-        alert(`Заявка принята!\n\nКод вакансии: ${code}\nНикнейм: ${nick}\nПричина: \${reason}\n\nОжидайте ответа от командования.`);
-        modal.style.display = 'none';
-        applicationForm.reset();
-    });
-
-    // --- ЭФФЕКТ ПЕЧАТИ ТЕКСТА ---
-    function typeWriterEffect() {
-        const cards = document.querySelectorAll('.job-card');
-        
-        cards.forEach(card => {
-            card.querySelector('.job-code').textContent = '';
-            card.querySelector('.job-desc').textContent = '';
-        });
-
-        cards.forEach((card, index) => {
-            const code = card.querySelector('.job-code');
-            const desc = card.querySelector('.job-desc');
-            
-            const codeText = card.getAttribute('data-code') || code.textContent;
-            const descText = card.getAttribute('data-desc') || desc.textContent;
-
-            if (!card.getAttribute('data-code')) card.setAttribute('data-code', codeText);
-            if (!card.getAttribute('data-desc')) card.setAttribute('data-desc', descText);
-
-            let i = 0;
-            const printCode = setInterval(() => {
-                if (i < codeText.length) {
-                    code.textContent += codeText.charAt(i);
-                    i++;
-                } else {
-                    clearInterval(printCode);
-                    let j = 0;
-                    const printDesc = setInterval(() => {
-                        if (j < descText.length) {
-                            desc.textContent += descText.charAt(j);
-                            j++;
-                        } else {
-                            clearInterval(printDesc);
-                        }
-                    }, 30);
+    function updateMatrix() {
+        const cols = matrix.children;
+        for (let i = 0; i < cols.length; i++) {
+            const chars = cols[i].children;
+            for (let j = 0; j < chars.length; j++) {
+                chars[j].style.top = (parseInt(chars[j].style.top) + gap) + 'px';
+                if (parseInt(chars[j].style.top) > window.innerHeight) {
+                    chars[j].style.top = '-20px';
+                    chars[j].innerText = chars[Math.floor(Math.random() * chars.length)];
                 }
-            }, 50);
-        });
+            }
+        }
+        requestAnimationFrame(updateMatrix);
     }
 
-    // Старт
-    startLoading();
+    createMatrix();
+    updateMatrix();
+
+    // --- ЛОГИКА ЗАГРУЗКИ (BOOT SCREEN) ---
+    const bootScreen = document.getElementById('boot-screen');
+    const bootStatus = document.getElementById('bootStatus');
+    
+    setTimeout(() => {
+        bootStatus.innerText = "[ ДОСТУП РАЗРЕШЁН ]";
+        setTimeout(() => {
+            bootScreen.style.opacity = '0';
+            setTimeout(() => {
+                bootScreen.style.display = 'none';
+                document.getElementById('screen-main').classList.add('active');
+            }, 500);
+        }, 1000);
+    }, 3000);
+
+    // --- ПЕРЕХОДЫ ---
+    function goToJobs() {
+        document.getElementById('infoOutput').style.display = 'none';
+        document.getElementById('screen-main').classList.remove('active');
+        document.getElementById('screen-jobs').classList.add('active');
+        
+        // Запускаем эффект печати текста
+        typeWriterEffect();
+    }
+
+    function goToMain() {
+        document.getElementById('screen-jobs').classList.remove('active');
+        document.getElementById('screen-main').classList.add('active');
+        document.getElementById('infoOutput').style.display = 'none';
+    }
+
+    // --- ВЫВОД ТЕКСТА В МЕНЮ (Вместо Alert) ---
+    function showInfo(type) {
+        const output = document.getElementById('infoOutput');
+        if (type === 'elite') {
+            output.innerHTML = '<b>[ ELITE LEGION ]</b><br><br>Элитное подразделение специального назначения.<br>Создано для выполнения задач, где обычные силы бессильны.<br><br><span style="color:#555">Статус: Активно</span>';
+        } else if (type === 'rules') {
+            output.innerHTML = '<b>[ УСТАВ ]</b><br><br>1. Приказ старшего по званию — закон.<br>2. Не разглашать секретные данные.<br>3. Соблюдать субординацию.<br><br><span style="color:#555">Нарушение карается дисциплинарным взысканием.</span>';
+        }
+        output.style.display = 'block';
+    }
+
+    // --- ЭФФЕКТ ПЕЧАТНОЙ МАШИНКИ (ДЛЯ ВАКАНСИЙ) ---
+    function typeWriterEffect() {
+        const code1 = document.getElementById('code1');
+        const desc1 = document.getElementById('desc1');
+        const code2 = document.getElementById('code2');
+        const desc2 = document.getElementById('desc2');
+
+        // Сброс текста
+        code1.innerText = ''; desc1.innerText = '';
+        code2.innerText = ''; desc2.innerText = '';
+
+        // Карточка 1
+        let i = 0;
+        const printCode1 = setInterval(() => {
+            if (i < jobsData.code.length) {
+                code1.innerText += jobsData.code.charAt(i);
+                i++;
+            } else {
+                clearInterval(printCode1);
+                let j = 0;
+                const printDesc1 = setInterval(() => {
+                    if (j < jobsData.desc.length) {
+                        desc1.innerText += jobsData.desc.charAt(j);
+                        j++;
+                    } else {
+                        clearInterval(printDesc1);
+                    }
+                }, 20);
+            }
+        }, 30);
+
+        // Карточка 2 (с небольшой задержкой)
+        setTimeout(() => {
+            let k = 0;
+            const printCode2 = setInterval(() => {
+                if (k < jobsData.code.length) {
+                    code2.innerText += jobsData.code.charAt(k);
+                    k++;
+                } else {
+                    clearInterval(printCode2);
+                    let l = 0;
+                    const printDesc2 = setInterval(() => {
+                        if (l < jobsData.desc.length) {
+                            desc2.innerText += jobsData.desc.charAt(l);
+                            l++;
+                        } else {
+                            clearInterval(printDesc2);
+                        }
+                    }, 20);
+                }
+            }, 30);
+        }, 400);
+    }
+
+    // --- МОДАЛЬНОЕ ОКНО ---
+    function openModal() {
+        const firstCode = document.getElementById('code1').innerText || 'UNKNOWN';
+        document.getElementById('modalCode').value = firstCode;
+        document.getElementById('applyModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('applyModal').style.display = 'none';
+    }
+
+    function submitForm(e) {
+        e.preventDefault();
+        alert('Заявка успешно отправлена в штаб-квартиру Elite Legion.\n\nОжидайте ответа командования.');
+        closeModal();
+        document.getElementById('applicationForm').reset();
+    }
 </script>
 
 </body>
