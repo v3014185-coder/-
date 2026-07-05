@@ -1,1 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDA Interface - ELITE Legion</title>
+    <style>
+        body {
+            background-color: #1a1c1a; 
+            color: #39ff14; 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .pda-screen {
+            width: 100%;
+            max-width: 800px; 
+            min-height: 750px; 
+            background-color: #0d0f0d;
+            border: 5px solid #3a413a;
+            border-radius: 15px;
+            box-shadow: inset 0 0 30px rgba(57, 255, 20, 0.15), 0 0 25px rgba(0,0,0,0.7);
+            padding: 40px; 
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .pda-screen::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 5;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            border-radius: 10px;
+        }
+        .scanline {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to bottom, rgba(57,255,20,0), rgba(57,255,20,0.05), rgba(57,255,20,0));
+            animation: scan 6s linear infinite;
+            z-index: 4;
+            pointer-events: none;
+        }
+        .pda-btn {
+            background-color: #1b261b;
+            color: #39ff14;
+            border: 2px solid #39ff14;
+            padding: 20px 40px; 
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px; 
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+            transition: all 0.2s ease;
+            width: 100%; 
+            max-width: 400px;
+            margin: 10px 0;
+        }
+        .pda-btn:hover {
+            background-color: #39ff14;
+            color: #0d0f0d;
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.5);
+        }
+        .pda-link {
+            color: #39ff14;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .pda-link:hover {
+            color: #fff;
+        }
+        .hidden { 
+            display: none !important; 
+        }
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        .menu-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 2px dashed #39ff14;
+            padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        .pda-text-display {
+            background-color: #080a08;
+            border: 1px solid #224422;
+            padding: 20px;
+            border-radius: 5px;
+            height: 350px; 
+            overflow-y: auto; 
+            font-size: 16px;
+            line-height: 1.6;
+            color: #a3ff8d; 
+            margin-bottom: 15px;
+            white-space: pre-wrap; 
+            word-wrap: break-word;
+        }
+        .pda-text-display::-webkit-scrollbar {
+            width: 8px;
+        }
+        .pda-text-display::-webkit-scrollbar-track {
+            background: #040604; 
+            border-radius: 5px;
+        }
+        .pda-text-display::-webkit-scrollbar-thumb {
+            background: #1b4d1b; 
+            border: 1px solid #39ff14; 
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+        }
+        .pda-text-display::-webkit-scrollbar-thumb:hover {
+            background: #39ff14; 
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.8);
+        }
+        .glitch {
+            animation: glitchAni 0.15s steps(2) infinite;
+        }
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px;
+            width: 100%;
+        }
+        @keyframes scan {
+            0% { top: -100px; }
+            100% { top: 100%; }
+        }
+        @keyframes glitchAni {
+            0% { transform: translate(1px, -1px); filter: brightness(1.3); }
+            50% { transform: translate(-1px, 1px); filter: brightness(0.9); }
+            100% { transform: translate(0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pda-screen">
+        <div class="scanline"></div>
+
+        <!-- ЭКРАН 1: Стартовое меню -->
+        <div id="start-menu" class="menu-container">
+            <div class="menu-title">-- БОРТОВОЙ КПК: СЕТЬ АКТИВНА --</div>
+            <p class="pda-text-display">[ НАЖМИТЕ ДЛЯ АКТИВАЦИИ ]</p>
+            <button id="activate-btn" class="pda-btn">АКТИВИРОВАТЬ</button>
+        </div>
+
+        <!-- ЭКРАН 2: Главное меню выбора -->
+        <div id="buttons-menu" class="menu-container hidden">
+            <div class="menu-title">[ ВЫБЕРИТЕ РАЗДЕЛ ]</div>
+            <div id="text-display" class="pda-text-display"></div>
+            <div class="buttons-grid">
+                <button id="btn-who" class="pda-btn">Кто такие ELITE?</button>
+                <button id="btn-rules" class="pda-btn">Где взять устав и что он представляет?</button>
+                <button id="btn-jobs" class="pda-btn">Вакансии</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 3: Кто такие ELITE -->
+        <div id="text-menu" class="menu-container hidden">
+            <div class="menu-title">[ ИНФОРМАЦИЯ: КТО ТАКИЕ ELITE ]</div>
+            <div id="text-who" class="pda-text-display type-text" data-text="ELITE - Гвардия отдела Metro Police Forces и Overwatch Transhuman Arms, одно из подразделений созданное Генеральным Штабом Сити-17. В данное подразделение входят строго лучшие юниты из рядов всех Гарнизонов ГО и OTA. Подразделение имеет дополнительные корпуса: Корпус юстиции и Корпус Командования. Подразделение занимается строгим надзором за соблюдением устава среди остальных юнитов ГО, а в случае нарушения того его пресечением и вынесением приговора. Для остальных юнитов ГО те является строгим образцом и фигурой ГО на которую стоит ровняться."></div>
+            <button id="btn-back-who" class="pda-btn">НАЗАД</button>
+        </div>
+
+        <!-- ЭКРАН 4: Устав -->
+        <div id="rules-menu" class="menu-container hidden">
+            <div class="menu-title">[ ИНФОРМАЦИЯ: УСТАВ ]</div>
+            <div id="text-rules" class="pda-text-display type-text" data-text="Устав — это свод правил, который задаёт порядок работы и поведения в какой‑либо организации или структуре. В Уставе есть 8 пунктов."></div>
+            <div style="margin-bottom:15px;">
+                <a href="https://docs.google.com/document/d/12YHZ9wqK59BK2zrPSvtvBxufcNWw3qUcNFpjO8pY9pU/edit?tab=t.0#heading=h.12wixb4wwso0" target="_blank" class="pda-link">ОТКРЫТЬ УСТАВ</a>
+            </div>
+            <button id="btn-back-rules" class="pda-btn">НАЗАД</button>
+        </div>
+
+        <!-- ЭКРАН 5: Вакансии -->
+        <div id="jobs-menu" class="menu-container hidden">
+            <div class="menu-title">[ ДОСТУПНЫЕ ВАКАНСИИ ]</div>
+            <div id="text-job1" class="pda-text-display type-text" data-text="1. C17.MPF.ELITE.JURY.OFC- Юнит Гражданской Обороны MPF под названием Элит либо ELITE. Занимается слежкой за соблюдением устава сотрудников Г.О . Так-же следят за порядком и дисциплиной, выявляют дефекты и отклонения."></div>
+            <div id="text-job2" class="pda-text-display type-text" data-text="2. C17.OTA.ELITE.LEGION- Экспериментальные единицы ОТА, предназначены для охраны важных лиц, предотвращения атак на город, бунтов и тому подобное"></div>
+            <button id="btn-back-jobs" class="pda-btn">НАЗАД</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const startMenu = document.getElementById('start-menu');
+            const buttonsMenu = document.getElementById('buttons-menu');
+            const textMenu = document.getElementById('text-menu');
+            const rulesMenu = document.getElementById('rules-menu');
+            const jobsMenu = document.getElementById('jobs-menu');
+
+            const activateBtn = document.getElementById('activate-btn');
+            const btnWho = document.getElementById('btn-who');
+            const btnRules = document.getElementById('btn-rules');
+            const btnJobs = document.getElementById('btn-jobs');
+
+            const btnBackWho = document.getElementById('btn-back-who');
+            const btnBackRules = document.getElementById('btn-back-rules');
+            const btnBackJobs = document.getElementById('btn-back-jobs');
+
+            const textDisplay = document.getElementById('text-display');
+
+            let typingTimers = [];
+
+            function stopTyping() {
+                typingTimers.forEach(timer => clearTimeout(timer));
+                typingTimers = [];
+            }
+
+            // Печатная машинка с поддержкой HTML-тегов (чтобы ссылки не ломались)
+            function typeWriter(element) {
+                stopTyping();
+                element.innerHTML = '';
+                element.classList.add('glitch');
+
+                const text = element.getAttribute('data-text');
+                let i = 0;
+                const speed = 15;
+
+                function type() {
+                    if (i < text.length) {
+                        const char = text[i];
+                        if (char === '<') {
+                            // Если встретили < — значит дальше идёт HTML-тег (например, ссылка).
+                            // Вставляем остаток строки целиком, чтобы не ломать разметку.
+                            element.innerHTML += text.slice(i);
+                            element.classList.remove('glitch');
+                            return;
+                        } else {
+                            element.textContent += char;
+                            i++;
+                            const timer = setTimeout(type, speed);
+                            typingTimers.push(timer);
+                        }
+                    } else {
+                        element.classList.remove('glitch');
+                    }
+                }
+                type();
+            }
+
+            activateBtn.addEventListener('click', () => { 
+                startMenu.classList.add('hidden'); 
+                buttonsMenu.classList.remove('hidden'); 
+                // Сразу печатаем приветствие в общий блок text-display
+                textDisplay.setAttribute('data-text', 'Выберите интересующий раздел информации.');
+                typeWriter(textDisplay);
+            });
+            
+            btnWho.addEventListener('click', () => { 
+                buttonsMenu.classList.add('hidden'); 
+                textMenu.classList.remove('hidden'); 
+                typeWriter(document.getElementById('text-who')); 
+            });
+
+            btnRules.addEventListener('click', () => { 
+                buttonsMenu.classList.add('hidden'); 
+                rulesMenu.classList.remove('hidden'); 
+                typeWriter(document.getElementById('text-rules')); 
+            });
+
+            btnJobs.addEventListener('click', () => { 
+                buttonsMenu.classList.add('hidden'); 
+                jobsMenu.classList.remove('hidden'); 
+                typeWriter(document.getElementById('text-job1'));
+                // Для второго блока вакансий тоже можно запустить типпинг отдельно, если нужно
+                setTimeout(() => {
+                    typeWriter(document.getElementById('text-job2'));
+                }, 300);
+            });
+
+            btnBackWho.addEventListener('click', () => { 
+                stopTyping(); 
+                textMenu.classList.add('hidden'); 
+                buttonsMenu.classList.remove('hidden'); 
+            });
+
+            btnBackRules.addEventListener('click', () => { 
+                stopTyping(); 
+                rulesMenu.classList.add('hidden'); 
+                buttonsMenu.classList.remove('hidden'); 
+            });
+
+            btnBackJobs.addEventListener('click', () => { 
+                stopTyping(); 
+                jobsMenu.classList.add('hidden'); 
+                buttonsMenu.classList.remove('hidden'); 
+            });
+        });
+    </script>
+</body>
+</html>
 
